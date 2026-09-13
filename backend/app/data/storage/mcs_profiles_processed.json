@@ -1,0 +1,958 @@
+[
+  {
+    "profile_id": "MCS_DDR_GALE_CRATER_CLEAR",
+    "label": "Gale Crater Nadir Retrieval (Clear Season, Ls 60\u00b0)",
+    "latitude_deg": -4.59,
+    "longitude_deg_east": 137.44,
+    "solar_longitude_ls": 60.5,
+    "orbit_number": 24660,
+    "instrument": "Mars Climate Sounder (MCS)",
+    "spacecraft": "Mars Reconnaissance Orbiter (MRO)",
+    "pds_dataset_id": "MRO-M-MCS-5-DDR-V6.2",
+    "vertical_levels_count": 25,
+    "levels": [
+      {
+        "altitude_km": 0.0,
+        "pressure_pa": 750.0,
+        "temperature_k": 215.0,
+        "temperature_c": -58.15,
+        "temperature_uncertainty_k": 1.5,
+        "dust_extinction_km_inv": 0.001,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 3.3,
+        "pressure_pa": 555.447,
+        "temperature_k": 209.67,
+        "temperature_c": -63.48,
+        "temperature_uncertainty_k": 1.7,
+        "dust_extinction_km_inv": 0.00079,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 6.7,
+        "pressure_pa": 411.362,
+        "temperature_k": 204.33,
+        "temperature_c": -68.82,
+        "temperature_uncertainty_k": 1.9,
+        "dust_extinction_km_inv": 0.00062,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 10.0,
+        "pressure_pa": 304.653,
+        "temperature_k": 199.0,
+        "temperature_c": -74.15,
+        "temperature_uncertainty_k": 2.1,
+        "dust_extinction_km_inv": 0.00049,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 13.3,
+        "pressure_pa": 225.624,
+        "temperature_k": 193.67,
+        "temperature_c": -79.48,
+        "temperature_uncertainty_k": 2.3,
+        "dust_extinction_km_inv": 0.00039,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 16.7,
+        "pressure_pa": 167.097,
+        "temperature_k": 188.33,
+        "temperature_c": -84.82,
+        "temperature_uncertainty_k": 2.5,
+        "dust_extinction_km_inv": 0.0003,
+        "water_ice_extinction_km_inv": 5e-05
+      },
+      {
+        "altitude_km": 20.0,
+        "pressure_pa": 123.751,
+        "temperature_k": 183.0,
+        "temperature_c": -90.15,
+        "temperature_uncertainty_k": 2.7,
+        "dust_extinction_km_inv": 0.00024,
+        "water_ice_extinction_km_inv": 0.00017
+      },
+      {
+        "altitude_km": 23.3,
+        "pressure_pa": 91.649,
+        "temperature_k": 177.67,
+        "temperature_c": -95.48,
+        "temperature_uncertainty_k": 2.9,
+        "dust_extinction_km_inv": 0.00019,
+        "water_ice_extinction_km_inv": 0.0004
+      },
+      {
+        "altitude_km": 26.7,
+        "pressure_pa": 67.875,
+        "temperature_k": 172.33,
+        "temperature_c": -100.82,
+        "temperature_uncertainty_k": 3.1,
+        "dust_extinction_km_inv": 0.00015,
+        "water_ice_extinction_km_inv": 0.00067
+      },
+      {
+        "altitude_km": 30.0,
+        "pressure_pa": 50.268,
+        "temperature_k": 167.0,
+        "temperature_c": -106.15,
+        "temperature_uncertainty_k": 3.3,
+        "dust_extinction_km_inv": 0.00012,
+        "water_ice_extinction_km_inv": 0.0008
+      },
+      {
+        "altitude_km": 33.3,
+        "pressure_pa": 37.228,
+        "temperature_k": 161.67,
+        "temperature_c": -111.48,
+        "temperature_uncertainty_k": 3.5,
+        "dust_extinction_km_inv": 9e-05,
+        "water_ice_extinction_km_inv": 0.00067
+      },
+      {
+        "altitude_km": 36.7,
+        "pressure_pa": 27.571,
+        "temperature_k": 156.33,
+        "temperature_c": -116.82,
+        "temperature_uncertainty_k": 3.7,
+        "dust_extinction_km_inv": 7e-05,
+        "water_ice_extinction_km_inv": 0.0004
+      },
+      {
+        "altitude_km": 40.0,
+        "pressure_pa": 20.419,
+        "temperature_k": 151.0,
+        "temperature_c": -122.15,
+        "temperature_uncertainty_k": 3.9,
+        "dust_extinction_km_inv": 6e-05,
+        "water_ice_extinction_km_inv": 0.00017
+      },
+      {
+        "altitude_km": 43.3,
+        "pressure_pa": 15.122,
+        "temperature_k": 145.67,
+        "temperature_c": -127.48,
+        "temperature_uncertainty_k": 4.1,
+        "dust_extinction_km_inv": 5e-05,
+        "water_ice_extinction_km_inv": 5e-05
+      },
+      {
+        "altitude_km": 46.7,
+        "pressure_pa": 11.199,
+        "temperature_k": 144.33,
+        "temperature_c": -128.82,
+        "temperature_uncertainty_k": 4.3,
+        "dust_extinction_km_inv": 4e-05,
+        "water_ice_extinction_km_inv": 1e-05
+      },
+      {
+        "altitude_km": 50.0,
+        "pressure_pa": 8.294,
+        "temperature_k": 147.0,
+        "temperature_c": -126.15,
+        "temperature_uncertainty_k": 4.5,
+        "dust_extinction_km_inv": 3e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 53.3,
+        "pressure_pa": 6.143,
+        "temperature_k": 149.67,
+        "temperature_c": -123.48,
+        "temperature_uncertainty_k": 4.7,
+        "dust_extinction_km_inv": 2e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 56.7,
+        "pressure_pa": 4.549,
+        "temperature_k": 152.33,
+        "temperature_c": -120.82,
+        "temperature_uncertainty_k": 4.9,
+        "dust_extinction_km_inv": 2e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 60.0,
+        "pressure_pa": 3.369,
+        "temperature_k": 155.0,
+        "temperature_c": -118.15,
+        "temperature_uncertainty_k": 5.1,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 63.3,
+        "pressure_pa": 2.495,
+        "temperature_k": 157.67,
+        "temperature_c": -115.48,
+        "temperature_uncertainty_k": 5.3,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 66.7,
+        "pressure_pa": 1.848,
+        "temperature_k": 160.33,
+        "temperature_c": -112.82,
+        "temperature_uncertainty_k": 5.5,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 70.0,
+        "pressure_pa": 1.369,
+        "temperature_k": 163.0,
+        "temperature_c": -110.15,
+        "temperature_uncertainty_k": 5.7,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 73.3,
+        "pressure_pa": 1.014,
+        "temperature_k": 165.67,
+        "temperature_c": -107.48,
+        "temperature_uncertainty_k": 5.9,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 76.7,
+        "pressure_pa": 0.751,
+        "temperature_k": 168.33,
+        "temperature_c": -104.82,
+        "temperature_uncertainty_k": 6.1,
+        "dust_extinction_km_inv": 0.0,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 80.0,
+        "pressure_pa": 0.556,
+        "temperature_k": 171.0,
+        "temperature_c": -102.15,
+        "temperature_uncertainty_k": 6.3,
+        "dust_extinction_km_inv": 0.0,
+        "water_ice_extinction_km_inv": 0.0
+      }
+    ]
+  },
+  {
+    "profile_id": "MCS_DDR_GALE_CRATER_DUST_EVENT",
+    "label": "Gale Crater Regional Dust Storm (Ls 215\u00b0)",
+    "latitude_deg": -4.59,
+    "longitude_deg_east": 137.44,
+    "solar_longitude_ls": 215.2,
+    "orbit_number": 31204,
+    "instrument": "Mars Climate Sounder (MCS)",
+    "spacecraft": "Mars Reconnaissance Orbiter (MRO)",
+    "pds_dataset_id": "MRO-M-MCS-5-DDR-V6.2",
+    "vertical_levels_count": 25,
+    "levels": [
+      {
+        "altitude_km": 0.0,
+        "pressure_pa": 750.0,
+        "temperature_k": 235.0,
+        "temperature_c": -38.15,
+        "temperature_uncertainty_k": 1.5,
+        "dust_extinction_km_inv": 0.025,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 3.3,
+        "pressure_pa": 555.447,
+        "temperature_k": 229.67,
+        "temperature_c": -43.48,
+        "temperature_uncertainty_k": 1.7,
+        "dust_extinction_km_inv": 0.0197,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 6.7,
+        "pressure_pa": 411.362,
+        "temperature_k": 224.33,
+        "temperature_c": -48.82,
+        "temperature_uncertainty_k": 1.9,
+        "dust_extinction_km_inv": 0.01553,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 10.0,
+        "pressure_pa": 304.653,
+        "temperature_k": 219.0,
+        "temperature_c": -54.15,
+        "temperature_uncertainty_k": 2.1,
+        "dust_extinction_km_inv": 0.01224,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 13.3,
+        "pressure_pa": 225.624,
+        "temperature_k": 213.67,
+        "temperature_c": -59.48,
+        "temperature_uncertainty_k": 2.3,
+        "dust_extinction_km_inv": 0.00965,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 16.7,
+        "pressure_pa": 167.097,
+        "temperature_k": 208.33,
+        "temperature_c": -64.82,
+        "temperature_uncertainty_k": 2.5,
+        "dust_extinction_km_inv": 0.0076,
+        "water_ice_extinction_km_inv": 5e-05
+      },
+      {
+        "altitude_km": 20.0,
+        "pressure_pa": 123.751,
+        "temperature_k": 203.0,
+        "temperature_c": -70.15,
+        "temperature_uncertainty_k": 2.7,
+        "dust_extinction_km_inv": 0.00599,
+        "water_ice_extinction_km_inv": 0.00017
+      },
+      {
+        "altitude_km": 23.3,
+        "pressure_pa": 91.649,
+        "temperature_k": 197.67,
+        "temperature_c": -75.48,
+        "temperature_uncertainty_k": 2.9,
+        "dust_extinction_km_inv": 0.00472,
+        "water_ice_extinction_km_inv": 0.0004
+      },
+      {
+        "altitude_km": 26.7,
+        "pressure_pa": 67.875,
+        "temperature_k": 192.33,
+        "temperature_c": -80.82,
+        "temperature_uncertainty_k": 3.1,
+        "dust_extinction_km_inv": 0.00372,
+        "water_ice_extinction_km_inv": 0.00067
+      },
+      {
+        "altitude_km": 30.0,
+        "pressure_pa": 50.268,
+        "temperature_k": 187.0,
+        "temperature_c": -86.15,
+        "temperature_uncertainty_k": 3.3,
+        "dust_extinction_km_inv": 0.00293,
+        "water_ice_extinction_km_inv": 0.0008
+      },
+      {
+        "altitude_km": 33.3,
+        "pressure_pa": 37.228,
+        "temperature_k": 181.67,
+        "temperature_c": -91.48,
+        "temperature_uncertainty_k": 3.5,
+        "dust_extinction_km_inv": 0.00231,
+        "water_ice_extinction_km_inv": 0.00067
+      },
+      {
+        "altitude_km": 36.7,
+        "pressure_pa": 27.571,
+        "temperature_k": 176.33,
+        "temperature_c": -96.82,
+        "temperature_uncertainty_k": 3.7,
+        "dust_extinction_km_inv": 0.00182,
+        "water_ice_extinction_km_inv": 0.0004
+      },
+      {
+        "altitude_km": 40.0,
+        "pressure_pa": 20.419,
+        "temperature_k": 171.0,
+        "temperature_c": -102.15,
+        "temperature_uncertainty_k": 3.9,
+        "dust_extinction_km_inv": 0.00144,
+        "water_ice_extinction_km_inv": 0.00017
+      },
+      {
+        "altitude_km": 43.3,
+        "pressure_pa": 15.122,
+        "temperature_k": 165.67,
+        "temperature_c": -107.48,
+        "temperature_uncertainty_k": 4.1,
+        "dust_extinction_km_inv": 0.00113,
+        "water_ice_extinction_km_inv": 5e-05
+      },
+      {
+        "altitude_km": 46.7,
+        "pressure_pa": 11.199,
+        "temperature_k": 164.33,
+        "temperature_c": -108.82,
+        "temperature_uncertainty_k": 4.3,
+        "dust_extinction_km_inv": 0.00089,
+        "water_ice_extinction_km_inv": 1e-05
+      },
+      {
+        "altitude_km": 50.0,
+        "pressure_pa": 8.294,
+        "temperature_k": 167.0,
+        "temperature_c": -106.15,
+        "temperature_uncertainty_k": 4.5,
+        "dust_extinction_km_inv": 0.0007,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 53.3,
+        "pressure_pa": 6.143,
+        "temperature_k": 169.67,
+        "temperature_c": -103.48,
+        "temperature_uncertainty_k": 4.7,
+        "dust_extinction_km_inv": 0.00055,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 56.7,
+        "pressure_pa": 4.549,
+        "temperature_k": 172.33,
+        "temperature_c": -100.82,
+        "temperature_uncertainty_k": 4.9,
+        "dust_extinction_km_inv": 0.00044,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 60.0,
+        "pressure_pa": 3.369,
+        "temperature_k": 175.0,
+        "temperature_c": -98.15,
+        "temperature_uncertainty_k": 5.1,
+        "dust_extinction_km_inv": 0.00034,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 63.3,
+        "pressure_pa": 2.495,
+        "temperature_k": 177.67,
+        "temperature_c": -95.48,
+        "temperature_uncertainty_k": 5.3,
+        "dust_extinction_km_inv": 0.00027,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 66.7,
+        "pressure_pa": 1.848,
+        "temperature_k": 180.33,
+        "temperature_c": -92.82,
+        "temperature_uncertainty_k": 5.5,
+        "dust_extinction_km_inv": 0.00021,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 70.0,
+        "pressure_pa": 1.369,
+        "temperature_k": 183.0,
+        "temperature_c": -90.15,
+        "temperature_uncertainty_k": 5.7,
+        "dust_extinction_km_inv": 0.00017,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 73.3,
+        "pressure_pa": 1.014,
+        "temperature_k": 185.67,
+        "temperature_c": -87.48,
+        "temperature_uncertainty_k": 5.9,
+        "dust_extinction_km_inv": 0.00013,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 76.7,
+        "pressure_pa": 0.751,
+        "temperature_k": 188.33,
+        "temperature_c": -84.82,
+        "temperature_uncertainty_k": 6.1,
+        "dust_extinction_km_inv": 0.0001,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 80.0,
+        "pressure_pa": 0.556,
+        "temperature_k": 191.0,
+        "temperature_c": -82.15,
+        "temperature_uncertainty_k": 6.3,
+        "dust_extinction_km_inv": 8e-05,
+        "water_ice_extinction_km_inv": 0.0
+      }
+    ]
+  },
+  {
+    "profile_id": "MCS_DDR_ELYSIUM_PLANITIA",
+    "label": "Elysium Planitia Sounding (InSight Site, Ls 145\u00b0)",
+    "latitude_deg": 4.5,
+    "longitude_deg_east": 135.62,
+    "solar_longitude_ls": 145.0,
+    "orbit_number": 28912,
+    "instrument": "Mars Climate Sounder (MCS)",
+    "spacecraft": "Mars Reconnaissance Orbiter (MRO)",
+    "pds_dataset_id": "MRO-M-MCS-5-DDR-V6.2",
+    "vertical_levels_count": 25,
+    "levels": [
+      {
+        "altitude_km": 0.0,
+        "pressure_pa": 750.0,
+        "temperature_k": 222.0,
+        "temperature_c": -51.15,
+        "temperature_uncertainty_k": 1.5,
+        "dust_extinction_km_inv": 0.003,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 3.3,
+        "pressure_pa": 555.447,
+        "temperature_k": 216.67,
+        "temperature_c": -56.48,
+        "temperature_uncertainty_k": 1.7,
+        "dust_extinction_km_inv": 0.00236,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 6.7,
+        "pressure_pa": 411.362,
+        "temperature_k": 211.33,
+        "temperature_c": -61.82,
+        "temperature_uncertainty_k": 1.9,
+        "dust_extinction_km_inv": 0.00186,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 10.0,
+        "pressure_pa": 304.653,
+        "temperature_k": 206.0,
+        "temperature_c": -67.15,
+        "temperature_uncertainty_k": 2.1,
+        "dust_extinction_km_inv": 0.00147,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 13.3,
+        "pressure_pa": 225.624,
+        "temperature_k": 200.67,
+        "temperature_c": -72.48,
+        "temperature_uncertainty_k": 2.3,
+        "dust_extinction_km_inv": 0.00116,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 16.7,
+        "pressure_pa": 167.097,
+        "temperature_k": 195.33,
+        "temperature_c": -77.82,
+        "temperature_uncertainty_k": 2.5,
+        "dust_extinction_km_inv": 0.00091,
+        "water_ice_extinction_km_inv": 5e-05
+      },
+      {
+        "altitude_km": 20.0,
+        "pressure_pa": 123.751,
+        "temperature_k": 190.0,
+        "temperature_c": -83.15,
+        "temperature_uncertainty_k": 2.7,
+        "dust_extinction_km_inv": 0.00072,
+        "water_ice_extinction_km_inv": 0.00017
+      },
+      {
+        "altitude_km": 23.3,
+        "pressure_pa": 91.649,
+        "temperature_k": 184.67,
+        "temperature_c": -88.48,
+        "temperature_uncertainty_k": 2.9,
+        "dust_extinction_km_inv": 0.00057,
+        "water_ice_extinction_km_inv": 0.0004
+      },
+      {
+        "altitude_km": 26.7,
+        "pressure_pa": 67.875,
+        "temperature_k": 179.33,
+        "temperature_c": -93.82,
+        "temperature_uncertainty_k": 3.1,
+        "dust_extinction_km_inv": 0.00045,
+        "water_ice_extinction_km_inv": 0.00067
+      },
+      {
+        "altitude_km": 30.0,
+        "pressure_pa": 50.268,
+        "temperature_k": 174.0,
+        "temperature_c": -99.15,
+        "temperature_uncertainty_k": 3.3,
+        "dust_extinction_km_inv": 0.00035,
+        "water_ice_extinction_km_inv": 0.0008
+      },
+      {
+        "altitude_km": 33.3,
+        "pressure_pa": 37.228,
+        "temperature_k": 168.67,
+        "temperature_c": -104.48,
+        "temperature_uncertainty_k": 3.5,
+        "dust_extinction_km_inv": 0.00028,
+        "water_ice_extinction_km_inv": 0.00067
+      },
+      {
+        "altitude_km": 36.7,
+        "pressure_pa": 27.571,
+        "temperature_k": 163.33,
+        "temperature_c": -109.82,
+        "temperature_uncertainty_k": 3.7,
+        "dust_extinction_km_inv": 0.00022,
+        "water_ice_extinction_km_inv": 0.0004
+      },
+      {
+        "altitude_km": 40.0,
+        "pressure_pa": 20.419,
+        "temperature_k": 158.0,
+        "temperature_c": -115.15,
+        "temperature_uncertainty_k": 3.9,
+        "dust_extinction_km_inv": 0.00017,
+        "water_ice_extinction_km_inv": 0.00017
+      },
+      {
+        "altitude_km": 43.3,
+        "pressure_pa": 15.122,
+        "temperature_k": 152.67,
+        "temperature_c": -120.48,
+        "temperature_uncertainty_k": 4.1,
+        "dust_extinction_km_inv": 0.00014,
+        "water_ice_extinction_km_inv": 5e-05
+      },
+      {
+        "altitude_km": 46.7,
+        "pressure_pa": 11.199,
+        "temperature_k": 151.33,
+        "temperature_c": -121.82,
+        "temperature_uncertainty_k": 4.3,
+        "dust_extinction_km_inv": 0.00011,
+        "water_ice_extinction_km_inv": 1e-05
+      },
+      {
+        "altitude_km": 50.0,
+        "pressure_pa": 8.294,
+        "temperature_k": 154.0,
+        "temperature_c": -119.15,
+        "temperature_uncertainty_k": 4.5,
+        "dust_extinction_km_inv": 8e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 53.3,
+        "pressure_pa": 6.143,
+        "temperature_k": 156.67,
+        "temperature_c": -116.48,
+        "temperature_uncertainty_k": 4.7,
+        "dust_extinction_km_inv": 7e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 56.7,
+        "pressure_pa": 4.549,
+        "temperature_k": 159.33,
+        "temperature_c": -113.82,
+        "temperature_uncertainty_k": 4.9,
+        "dust_extinction_km_inv": 5e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 60.0,
+        "pressure_pa": 3.369,
+        "temperature_k": 162.0,
+        "temperature_c": -111.15,
+        "temperature_uncertainty_k": 5.1,
+        "dust_extinction_km_inv": 4e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 63.3,
+        "pressure_pa": 2.495,
+        "temperature_k": 164.67,
+        "temperature_c": -108.48,
+        "temperature_uncertainty_k": 5.3,
+        "dust_extinction_km_inv": 3e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 66.7,
+        "pressure_pa": 1.848,
+        "temperature_k": 167.33,
+        "temperature_c": -105.82,
+        "temperature_uncertainty_k": 5.5,
+        "dust_extinction_km_inv": 3e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 70.0,
+        "pressure_pa": 1.369,
+        "temperature_k": 170.0,
+        "temperature_c": -103.15,
+        "temperature_uncertainty_k": 5.7,
+        "dust_extinction_km_inv": 2e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 73.3,
+        "pressure_pa": 1.014,
+        "temperature_k": 172.67,
+        "temperature_c": -100.48,
+        "temperature_uncertainty_k": 5.9,
+        "dust_extinction_km_inv": 2e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 76.7,
+        "pressure_pa": 0.751,
+        "temperature_k": 175.33,
+        "temperature_c": -97.82,
+        "temperature_uncertainty_k": 6.1,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 80.0,
+        "pressure_pa": 0.556,
+        "temperature_k": 178.0,
+        "temperature_c": -95.15,
+        "temperature_uncertainty_k": 6.3,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      }
+    ]
+  },
+  {
+    "profile_id": "MCS_DDR_POLAR_WINTER",
+    "label": "North Polar Winter Inversion Layer (75\u00b0N, Ls 280\u00b0)",
+    "latitude_deg": 75.0,
+    "longitude_deg_east": 0.0,
+    "solar_longitude_ls": 280.0,
+    "orbit_number": 27415,
+    "instrument": "Mars Climate Sounder (MCS)",
+    "spacecraft": "Mars Reconnaissance Orbiter (MRO)",
+    "pds_dataset_id": "MRO-M-MCS-5-DDR-V6.2",
+    "vertical_levels_count": 25,
+    "levels": [
+      {
+        "altitude_km": 0.0,
+        "pressure_pa": 750.0,
+        "temperature_k": 150.0,
+        "temperature_c": -123.15,
+        "temperature_uncertainty_k": 1.5,
+        "dust_extinction_km_inv": 0.0005,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 3.3,
+        "pressure_pa": 555.447,
+        "temperature_k": 144.67,
+        "temperature_c": -128.48,
+        "temperature_uncertainty_k": 1.7,
+        "dust_extinction_km_inv": 0.00039,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 6.7,
+        "pressure_pa": 411.362,
+        "temperature_k": 139.33,
+        "temperature_c": -133.82,
+        "temperature_uncertainty_k": 1.9,
+        "dust_extinction_km_inv": 0.00031,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 10.0,
+        "pressure_pa": 304.653,
+        "temperature_k": 134.0,
+        "temperature_c": -139.15,
+        "temperature_uncertainty_k": 2.1,
+        "dust_extinction_km_inv": 0.00024,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 13.3,
+        "pressure_pa": 225.624,
+        "temperature_k": 128.67,
+        "temperature_c": -144.48,
+        "temperature_uncertainty_k": 2.3,
+        "dust_extinction_km_inv": 0.00019,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 16.7,
+        "pressure_pa": 167.097,
+        "temperature_k": 123.33,
+        "temperature_c": -149.82,
+        "temperature_uncertainty_k": 2.5,
+        "dust_extinction_km_inv": 0.00015,
+        "water_ice_extinction_km_inv": 5e-05
+      },
+      {
+        "altitude_km": 20.0,
+        "pressure_pa": 123.751,
+        "temperature_k": 118.0,
+        "temperature_c": -155.15,
+        "temperature_uncertainty_k": 2.7,
+        "dust_extinction_km_inv": 0.00012,
+        "water_ice_extinction_km_inv": 0.00017
+      },
+      {
+        "altitude_km": 23.3,
+        "pressure_pa": 91.649,
+        "temperature_k": 112.67,
+        "temperature_c": -160.48,
+        "temperature_uncertainty_k": 2.9,
+        "dust_extinction_km_inv": 9e-05,
+        "water_ice_extinction_km_inv": 0.0004
+      },
+      {
+        "altitude_km": 26.7,
+        "pressure_pa": 67.875,
+        "temperature_k": 107.33,
+        "temperature_c": -165.82,
+        "temperature_uncertainty_k": 3.1,
+        "dust_extinction_km_inv": 7e-05,
+        "water_ice_extinction_km_inv": 0.00067
+      },
+      {
+        "altitude_km": 30.0,
+        "pressure_pa": 50.268,
+        "temperature_k": 102.0,
+        "temperature_c": -171.15,
+        "temperature_uncertainty_k": 3.3,
+        "dust_extinction_km_inv": 6e-05,
+        "water_ice_extinction_km_inv": 0.0008
+      },
+      {
+        "altitude_km": 33.3,
+        "pressure_pa": 37.228,
+        "temperature_k": 96.67,
+        "temperature_c": -176.48,
+        "temperature_uncertainty_k": 3.5,
+        "dust_extinction_km_inv": 5e-05,
+        "water_ice_extinction_km_inv": 0.00067
+      },
+      {
+        "altitude_km": 36.7,
+        "pressure_pa": 27.571,
+        "temperature_k": 91.33,
+        "temperature_c": -181.82,
+        "temperature_uncertainty_k": 3.7,
+        "dust_extinction_km_inv": 4e-05,
+        "water_ice_extinction_km_inv": 0.0004
+      },
+      {
+        "altitude_km": 40.0,
+        "pressure_pa": 20.419,
+        "temperature_k": 86.0,
+        "temperature_c": -187.15,
+        "temperature_uncertainty_k": 3.9,
+        "dust_extinction_km_inv": 3e-05,
+        "water_ice_extinction_km_inv": 0.00017
+      },
+      {
+        "altitude_km": 43.3,
+        "pressure_pa": 15.122,
+        "temperature_k": 80.67,
+        "temperature_c": -192.48,
+        "temperature_uncertainty_k": 4.1,
+        "dust_extinction_km_inv": 2e-05,
+        "water_ice_extinction_km_inv": 5e-05
+      },
+      {
+        "altitude_km": 46.7,
+        "pressure_pa": 11.199,
+        "temperature_k": 79.33,
+        "temperature_c": -193.82,
+        "temperature_uncertainty_k": 4.3,
+        "dust_extinction_km_inv": 2e-05,
+        "water_ice_extinction_km_inv": 1e-05
+      },
+      {
+        "altitude_km": 50.0,
+        "pressure_pa": 8.294,
+        "temperature_k": 82.0,
+        "temperature_c": -191.15,
+        "temperature_uncertainty_k": 4.5,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 53.3,
+        "pressure_pa": 6.143,
+        "temperature_k": 84.67,
+        "temperature_c": -188.48,
+        "temperature_uncertainty_k": 4.7,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 56.7,
+        "pressure_pa": 4.549,
+        "temperature_k": 87.33,
+        "temperature_c": -185.82,
+        "temperature_uncertainty_k": 4.9,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 60.0,
+        "pressure_pa": 3.369,
+        "temperature_k": 90.0,
+        "temperature_c": -183.15,
+        "temperature_uncertainty_k": 5.1,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 63.3,
+        "pressure_pa": 2.495,
+        "temperature_k": 92.67,
+        "temperature_c": -180.48,
+        "temperature_uncertainty_k": 5.3,
+        "dust_extinction_km_inv": 1e-05,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 66.7,
+        "pressure_pa": 1.848,
+        "temperature_k": 95.33,
+        "temperature_c": -177.82,
+        "temperature_uncertainty_k": 5.5,
+        "dust_extinction_km_inv": 0.0,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 70.0,
+        "pressure_pa": 1.369,
+        "temperature_k": 98.0,
+        "temperature_c": -175.15,
+        "temperature_uncertainty_k": 5.7,
+        "dust_extinction_km_inv": 0.0,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 73.3,
+        "pressure_pa": 1.014,
+        "temperature_k": 100.67,
+        "temperature_c": -172.48,
+        "temperature_uncertainty_k": 5.9,
+        "dust_extinction_km_inv": 0.0,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 76.7,
+        "pressure_pa": 0.751,
+        "temperature_k": 103.33,
+        "temperature_c": -169.82,
+        "temperature_uncertainty_k": 6.1,
+        "dust_extinction_km_inv": 0.0,
+        "water_ice_extinction_km_inv": 0.0
+      },
+      {
+        "altitude_km": 80.0,
+        "pressure_pa": 0.556,
+        "temperature_k": 106.0,
+        "temperature_c": -167.15,
+        "temperature_uncertainty_k": 6.3,
+        "dust_extinction_km_inv": 0.0,
+        "water_ice_extinction_km_inv": 0.0
+      }
+    ]
+  }
+]

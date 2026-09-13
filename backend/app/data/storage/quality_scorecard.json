@@ -1,0 +1,27 @@
+{
+  "curiosity_msl": {
+    "total_observations": 4745,
+    "sol_range": "Sol 1 to Sol 4995",
+    "completeness_pressure_pct": 99.4,
+    "completeness_temperature_pct": 99.4,
+    "schema_check": "PASS (Strict Pydantic / Typed Columns)",
+    "range_check": "PASS (Martian Physical Bounds: -130\u00b0C to +30\u00b0C, 600-1150 Pa)",
+    "duplicate_check": "PASS (Unique Sol IDs validated)",
+    "gap_detection": "Detected 4 significant sensor gap intervals during Curiosity drill operations & solar conjunctions"
+  },
+  "insight_apss": {
+    "total_observations": 57,
+    "sol_range": "Sol 10 to Sol 745",
+    "schema_check": "PASS",
+    "range_check": "PASS",
+    "completeness_pct": 94.8,
+    "gap_detection": "Dust event sleep modes detected in late mission sols"
+  },
+  "mro_mcs": {
+    "profiles_count": 4,
+    "vertical_layers": 25,
+    "altitude_range_km": "0.0 to 80.0 km",
+    "uncertainty_status": "PASS (Per-layer 1-sigma uncertainty verified)",
+    "completeness_pct": 98.2
+  }
+}

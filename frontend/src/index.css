@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-mars-darkest text-slate-200 font-sans antialiased selection:bg-mars-amber selection:text-white;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(30, 46, 71, 0.25) 0%, transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(217, 83, 56, 0.05) 0%, transparent 50%);
+    min-height: 100vh;
+  }
+}
+
+/* Custom telemetry scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080d16;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2e47;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2d4468;
+}
+
+/* Monospace telemetry pill */
+.telemetry-pill {
+  @apply font-mono text-xs px-2 py-0.5 rounded bg-mars-dark border border-mars-border text-mars-cyan;
+}
