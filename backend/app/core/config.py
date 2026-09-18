@@ -13,7 +13,7 @@ API_V1_STR = "/api"
 
 # Server
 HOST = os.getenv("HOST", "127.0.0.1")
-PORT = int(os.getenv("PORT", 8000))
+PORT = int(os.getenv("PORT") or 8000)
 
 # Planetary Constants
 MARS_SOLAR_DAY_SECONDS = 88775.244  # Length of 1 Martian Sol in SI seconds
