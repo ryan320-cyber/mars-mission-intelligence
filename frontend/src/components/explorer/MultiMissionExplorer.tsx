@@ -12,7 +12,7 @@ import {
   FileSpreadsheet
 } from "lucide-react";
 import { ObservationRecord, ObservationsResponse } from "../../lib/types";
-import { api } from "../../lib/api";
+import { api, API_BASE } from "../../lib/api";
 import { ScientificTimeSeries } from "../charts/ScientificTimeSeries";
 
 export const MultiMissionExplorer: React.FC = () => {
@@ -73,8 +73,7 @@ export const MultiMissionExplorer: React.FC = () => {
   const totalPages = Math.ceil(filteredRows.length / pageSize);
 
   const handleExportCSV = () => {
-    const baseUrl = import.meta.env.VITE_API_URL || 'https://mars-mission-intelligence3.vercel.app';
-    window.open(`${baseUrl}/api/export?mission=${mission}&format=csv`, "_blank");
+    window.open(`${API_BASE}/export?mission=${mission}&format=csv`, "_blank");
   };
 
   return (

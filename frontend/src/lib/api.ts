@@ -10,7 +10,9 @@ import {
   DataCatalogItem
 } from "./types";
 
-export const API_BASE = `${import.meta.env.VITE_API_URL || 'https://mars-mission-intelligence3.vercel.app'}/api`;
+const rawBase = (import.meta.env.VITE_API_URL || 'https://mars-mission-intelligence3.vercel.app').replace(/\/+$/, '');
+const baseUrl = rawBase.replace(/\/api$/, '');
+export const API_BASE = `${baseUrl}/api`;
 
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}${endpoint}`;
