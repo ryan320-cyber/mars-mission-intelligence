@@ -18,6 +18,10 @@ def test_get_mission_overview():
     assert data["total_observations"] > 4000
     assert "current_meci" in data
 
+    # Test trailing slash returns 200 directly without 308 redirect
+    res_slash = client.get("/api/overview/", follow_redirects=False)
+    assert res_slash.status_code == 200
+
 def test_get_catalog():
     res = client.get("/api/catalog")
     assert res.status_code == 200

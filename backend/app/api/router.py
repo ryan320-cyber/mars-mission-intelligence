@@ -33,13 +33,14 @@ from app.analytics.challenge_index import calculate_meci, simulate_scenario
 from app.ml.model_lab import run_model_experiment
 from app.ai.grounded_scientist import query_mars_ai_scientist, PRESET_QUESTIONS
 
-api_router = APIRouter()
+api_router = APIRouter(redirect_slashes=False)
 
 # In-memory cached runs
 _cached_ml_experiment: Optional[Dict[str, Any]] = None
 _cached_multivariate_anomalies: Optional[List[Dict[str, Any]]] = None
 
 @api_router.get("/overview")
+@api_router.get("/overview/", include_in_schema=False)
 def get_mission_overview() -> Dict[str, Any]:
     """High-level summary of Mars environmental intelligence status."""
     global _cached_multivariate_anomalies

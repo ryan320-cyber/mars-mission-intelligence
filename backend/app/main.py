@@ -29,14 +29,14 @@ app = FastAPI(
         "with time-series analysis, dual anomaly detection, ML Model Lab, and Grounded AI."
     ),
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    redirect_slashes=False,
 )
 
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_origin_regex=".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
