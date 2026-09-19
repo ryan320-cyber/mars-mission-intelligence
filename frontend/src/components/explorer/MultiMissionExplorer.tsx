@@ -73,7 +73,8 @@ export const MultiMissionExplorer: React.FC = () => {
   const totalPages = Math.ceil(filteredRows.length / pageSize);
 
   const handleExportCSV = () => {
-    window.open(`http://127.0.0.1:8000/api/export?mission=${mission}&format=csv`, "_blank");
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://mars-mission-intelligence3.vercel.app';
+    window.open(`${baseUrl}/api/export?mission=${mission}&format=csv`, "_blank");
   };
 
   return (
