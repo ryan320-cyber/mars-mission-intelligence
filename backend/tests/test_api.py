@@ -69,3 +69,15 @@ def test_post_ai_query():
     assert "analytical_interpretation" in data
     assert "limitations" in data
     assert "source" in data
+
+def test_cors_headers():
+    origin = "https://mars-mission-intelligence-pzjo.vercel.app"
+    res = client.options(
+        "/api/overview",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert res.status_code == 200
+    assert res.headers.get("access-control-allow-origin") == origin
