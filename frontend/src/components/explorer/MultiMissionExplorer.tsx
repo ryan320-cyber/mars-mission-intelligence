@@ -14,11 +14,13 @@ import {
 import { ObservationRecord, ObservationsResponse } from "../../lib/types";
 import { api, API_BASE } from "../../lib/api";
 import { ScientificTimeSeries } from "../charts/ScientificTimeSeries";
+import { SkeletonLoader } from "../common/SkeletonLoader";
 
 export const MultiMissionExplorer: React.FC = () => {
   const [mission, setMission] = useState<string>("curiosity");
   const [dataResponse, setDataResponse] = useState<ObservationsResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   
   // Controls
   const [selectedVariable, setSelectedVariable] = useState<string>("pressure_pa");
@@ -31,6 +33,7 @@ export const MultiMissionExplorer: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
+    setError(null);
     api.getObservations(mission, 450)
       .then((res) => {
         if (isMounted) {
@@ -41,7 +44,10 @@ export const MultiMissionExplorer: React.FC = () => {
       })
       .catch((err) => {
         console.error("Failed to load observations:", err);
-        setLoading(false);
+        if (isMounted) {
+          setError("Failed to fetch mission telemetry. Ensure the backend is running.");
+          setLoading(false);
+        }
       });
 
     return () => {
@@ -148,8 +154,11 @@ export const MultiMissionExplorer: React.FC = () => {
 
       {/* Interactive Time-Series Chart */}
       {loading ? (
-        <div className="h-64 bg-mars-panel border border-mars-border rounded-lg flex items-center justify-center font-mono text-xs text-slate-400">
-          Loading Mission Time-Series Telemetry...
+        <SkeletonLoader type="chart" />
+      ) : error ? (
+        <div className="h-64 bg-mars-panel border border-rose-500/40 rounded-lg flex flex-col items-center justify-center gap-3 font-mono text-xs text-slate-400">
+          <AlertCircle className="w-8 h-8 text-rose-400" />
+          <span className="text-rose-300">{error}</span>
         </div>
       ) : (
         <ScientificTimeSeries
@@ -189,6 +198,9 @@ export const MultiMissionExplorer: React.FC = () => {
         </div>
 
         {/* Table */}
+        {loading ? (
+          <SkeletonLoader type="table" lines={8} />
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs font-mono">
             <thead className="bg-mars-surface text-slate-400 border-b border-mars-border uppercase text-[10px]">
@@ -231,6 +243,7 @@ export const MultiMissionExplorer: React.FC = () => {
             </tbody>
           </table>
         </div>
+        )}
 
         {/* Pagination */}
         <div className="flex items-center justify-between pt-2 border-t border-mars-border text-xs font-mono text-slate-400">

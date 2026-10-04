@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { MissionOverviewData } from "../../lib/types";
 
+import { SkeletonLoader } from "../common/SkeletonLoader";
+
 interface MissionOverviewProps {
   data: MissionOverviewData | null;
   onNavigate: (tabId: string) => void;
@@ -21,8 +23,9 @@ interface MissionOverviewProps {
 export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNavigate }) => {
   if (!data) {
     return (
-      <div className="p-8 text-center font-mono text-xs text-slate-400 bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-xl shadow-lg">
-        Loading Martian Environmental Telemetry...
+      <div className="space-y-4">
+        <SkeletonLoader lines={4} type="card" />
+        <SkeletonLoader lines={5} type="table" />
       </div>
     );
   }

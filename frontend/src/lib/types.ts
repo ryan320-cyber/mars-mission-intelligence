@@ -164,6 +164,7 @@ export interface ModelLabData {
     val_samples: number;
     test_samples: number;
     train_sol_range: string;
+    val_sol_range?: string;
     test_sol_range: string;
   };
   models_comparison: ModelComparisonItem[];
@@ -171,6 +172,16 @@ export interface ModelLabData {
   slice_error_analysis: {
     seasonal_slices: Record<string, { sample_count: number; mae: number; max_error: number }>;
     failure_case_analysis: string;
+    dust_storm_failure_cases?: {
+      sol: number;
+      solar_longitude_ls: number;
+      actual_amplitude_c: number;
+      predicted_rf_c: number;
+      error_c: number;
+      phenomenon: string;
+    }[];
+    dust_season_sample_count?: number;
+    dust_season_extreme_error_count?: number;
   };
   test_predictions_sample: {
     sol: number;

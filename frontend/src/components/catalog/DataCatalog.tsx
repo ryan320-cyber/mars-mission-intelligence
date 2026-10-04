@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Database, ExternalLink, ShieldCheck, FileCheck, Layers, BookOpen } from "lucide-react";
+import { Database, ExternalLink, ShieldCheck, FileCheck, Layers, BookOpen, AlertCircle } from "lucide-react";
 import { DataCatalogItem } from "../../lib/types";
 import { api } from "../../lib/api";
+import { SkeletonLoader } from "../common/SkeletonLoader";
 
 export const DataCatalog: React.FC = () => {
   const [catalog, setCatalog] = useState<Record<string, DataCatalogItem>>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -18,15 +20,30 @@ export const DataCatalog: React.FC = () => {
       })
       .catch((err) => {
         console.error("Failed to load catalog:", err);
-        setLoading(false);
+        if (isMounted) {
+          setError("Failed to load the data catalog. Ensure the backend is running.");
+          setLoading(false);
+        }
       });
     return () => { isMounted = false; };
   }, []);
 
   if (loading) {
     return (
-      <div className="p-8 text-center font-mono text-xs text-slate-400">
-        Loading NASA Planetary Data Catalog & Provenance Registry...
+      <div className="space-y-6">
+        <SkeletonLoader type="card" lines={4} />
+        <SkeletonLoader type="card" lines={4} />
+        <SkeletonLoader type="card" lines={4} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-mars-panel border border-rose-500/40 rounded-xl p-8 flex flex-col items-center gap-4 font-mono text-xs">
+        <AlertCircle className="w-10 h-10 text-rose-400" />
+        <span className="text-rose-300 font-bold text-sm">DATA CATALOG UNAVAILABLE</span>
+        <span className="text-slate-400 text-center max-w-md">{error}</span>
       </div>
     );
   }

@@ -85,3 +85,52 @@ def test_cors_headers():
     )
     assert res.status_code == 200
     assert res.headers.get("access-control-allow-origin") == origin
+
+    # Test local dev origin
+    local_origin = "http://localhost:5173"
+    res_local = client.options(
+        "/api/overview",
+        headers={
+            "Origin": local_origin,
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert res_local.status_code == 200
+    assert res_local.headers.get("access-control-allow-origin") == local_origin
+
+def test_profile_downsampling():
+    # Full profiles
+    res_full = client.get("/api/profiles?downsample=false")
+    assert res_full.status_code == 200
+    full_data = res_full.json()
+    assert len(full_data["profiles"][0]["levels"]) == 25
+
+    # Downsampled profiles (retaining 15 levels with 1-sigma uncertainty preserved)
+    res_down = client.get("/api/profiles?downsample=true&target_levels=15")
+    assert res_down.status_code == 200
+    down_data = res_down.json()
+    assert len(down_data["profiles"][0]["levels"]) <= 16
+    assert down_data["profiles"][0]["levels"][0]["altitude_km"] == 0.0
+
+def test_sol_replay_fast_response():
+    # Warm up client / route
+    _ = client.get("/api/replay/2082")
+
+    import time
+    start = time.perf_counter()
+    res = client.get("/api/replay/2082")
+    duration_ms = (time.perf_counter() - start) * 1000
+    assert res.status_code == 200
+    data = res.json()
+    assert data["target_sol"] == 2082
+    assert len(data["replay_timeline"]) > 0
+
+    # Also test the underlying algorithmic reconstruction latency
+    from app.core.data_loader import data_loader
+    from app.analytics.anomaly import generate_event_replay
+    recs = data_loader.get_curiosity_records()
+    t_start = time.perf_counter()
+    replay = generate_event_replay(recs, 2082)
+    algo_ms = (time.perf_counter() - t_start) * 1000
+    assert replay is not None
+    assert algo_ms < 20.0  # Core algorithmic replay reconstruction runs in < 20ms

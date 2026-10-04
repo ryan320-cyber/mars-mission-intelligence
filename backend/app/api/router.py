@@ -12,11 +12,13 @@ import csv
 import json
 import hashlib
 
+from app.core.data_loader import data_loader
 from app.data.ingestion import ingestion_engine
 from app.data.catalog import DATASET_CATALOG, get_catalog_summary
 from app.analytics.time_series import (
     calculate_time_series_features, 
     downsample_time_series, 
+    downsample_vertical_profiles,
     identify_sensor_gaps
 )
 from app.analytics.statistics import (
@@ -44,8 +46,8 @@ _cached_multivariate_anomalies: Optional[List[Dict[str, Any]]] = None
 def get_mission_overview() -> Dict[str, Any]:
     """High-level summary of Mars environmental intelligence status."""
     global _cached_multivariate_anomalies
-    curiosity = ingestion_engine.ingest_curiosity_rems()
-    insight = ingestion_engine.ingest_insight_meteorology()
+    curiosity = data_loader.get_curiosity_records()
+    insight = data_loader.get_insight_records()
     
     if _cached_multivariate_anomalies is None:
         _cached_multivariate_anomalies = detect_multivariate_anomalies(curiosity)
@@ -103,9 +105,9 @@ def get_observations(
 ) -> Dict[str, Any]:
     """Query verified observational time series."""
     if mission.lower() in ["curiosity", "msl"]:
-        records = ingestion_engine.ingest_curiosity_rems()
+        records = data_loader.get_curiosity_records()
     elif mission.lower() in ["insight"]:
-        records = ingestion_engine.ingest_insight_meteorology()
+        records = data_loader.get_insight_records()
     else:
         raise HTTPException(status_code=400, detail=f"Unsupported mission '{mission}'. Choose 'curiosity' or 'insight'.")
 
@@ -135,12 +137,17 @@ def get_observations(
     }
 
 @api_router.get("/profiles")
-def get_vertical_profiles() -> Dict[str, Any]:
+def get_vertical_profiles(
+    downsample: bool = Query(False, description="Downsample vertical sounding layers for smaller network payload"),
+    target_levels: int = Query(15, description="Number of target vertical levels to retain")
+) -> Dict[str, Any]:
     """Retrieve MRO Mars Climate Sounder (MCS) vertical atmospheric sounding profiles."""
-    profiles = ingestion_engine.ingest_mcs_profiles()
+    profiles = data_loader.get_mcs_profiles()
+    if downsample:
+        profiles = downsample_vertical_profiles(profiles, target_levels=target_levels)
     return {
         "dataset_name": "MRO Mars Climate Sounder (MCS) Level 2 DDR",
-        "vertical_layers": 25,
+        "vertical_layers": len(profiles[0]["levels"]) if profiles else 25,
         "max_altitude_km": 80.0,
         "profiles": profiles
     }
@@ -152,7 +159,7 @@ def get_anomalies(
 ) -> Dict[str, Any]:
     """Univariate (Robust Z-Score) and Multivariate (Isolation Forest) anomalies."""
     global _cached_multivariate_anomalies
-    curiosity = ingestion_engine.ingest_curiosity_rems()
+    curiosity = data_loader.get_curiosity_records()
     
     univariate = detect_univariate_anomalies(curiosity, variable=variable, threshold=threshold)
     
@@ -165,13 +172,13 @@ def get_anomalies(
         "univariate_anomalies": univariate[:50],
         "multivariate_count": len(_cached_multivariate_anomalies),
         "multivariate_anomalies": _cached_multivariate_anomalies[:40],
-        "methodology": "Robust Z-Score (Median Absolute Deviation) + Multivariate Isolation Forest"
+        "methodology": "Robust Z-Score (Vectorized Median Absolute Deviation) + Multivariate Isolation Forest"
     }
 
 @api_router.get("/replay/{target_sol}")
 def get_event_replay(target_sol: int) -> Dict[str, Any]:
     """Signature WOW Moment #1: Mars Environmental Event Replay (T-12 to T+12 Sols)."""
-    curiosity = ingestion_engine.ingest_curiosity_rems()
+    curiosity = data_loader.get_curiosity_records()
     replay = generate_event_replay(curiosity, target_sol=target_sol)
     if not replay:
         raise HTTPException(status_code=404, detail=f"Sol {target_sol} not found in observation series.")
@@ -180,7 +187,7 @@ def get_event_replay(target_sol: int) -> Dict[str, Any]:
 @api_router.get("/statistics/summary")
 def get_statistics_summary(variable: str = Query("air_temp_max_c")) -> Dict[str, Any]:
     """Compute summary statistics for a given variable."""
-    curiosity = ingestion_engine.ingest_curiosity_rems()
+    curiosity = data_loader.get_curiosity_records()
     vals = [r.get(variable) for r in curiosity if r.get(variable) is not None]
     stats = compute_summary_statistics(vals)
     return {
@@ -191,21 +198,21 @@ def get_statistics_summary(variable: str = Query("air_temp_max_c")) -> Dict[str,
 @api_router.get("/statistics/correlation")
 def get_correlation_matrix() -> Dict[str, Any]:
     """Interactive Pearson and Spearman correlation matrices with p-values."""
-    curiosity = ingestion_engine.ingest_curiosity_rems()
+    curiosity = data_loader.get_curiosity_records()
     variables = ["air_temp_max_c", "air_temp_min_c", "temp_amplitude_c", "pressure_pa", "solar_longitude_ls"]
     return compute_correlation_matrix(curiosity, variables)
 
 @api_router.get("/statistics/comparison")
 def get_mission_comparison() -> Dict[str, Any]:
     """Cross-mission hypothesis testing (Curiosity Gale Crater vs InSight Elysium Planitia)."""
-    curiosity = ingestion_engine.ingest_curiosity_rems()
-    insight = ingestion_engine.ingest_insight_meteorology()
+    curiosity = data_loader.get_curiosity_records()
+    insight = data_loader.get_insight_records()
     return compare_missions(curiosity, insight)
 
 @api_router.get("/challenge-index")
 def get_challenge_index() -> Dict[str, Any]:
     """Martian Environmental Challenge Index with factor decomposition."""
-    curiosity = ingestion_engine.ingest_curiosity_rems()
+    curiosity = data_loader.get_curiosity_records()
     latest = curiosity[-1] if curiosity else {}
     return calculate_meci(
         temp_amplitude_c=latest.get("temp_amplitude_c"),
@@ -222,7 +229,7 @@ def post_challenge_index_simulation(
     dust_storm_active: bool = Body(False, embed=True)
 ) -> Dict[str, Any]:
     """Execute simulated What-If scenario analysis."""
-    curiosity = ingestion_engine.ingest_curiosity_rems()
+    curiosity = data_loader.get_curiosity_records()
     latest = curiosity[-1] if curiosity else {}
     base_meci = calculate_meci(
         temp_amplitude_c=latest.get("temp_amplitude_c"),
@@ -243,7 +250,7 @@ def get_model_lab() -> Dict[str, Any]:
     """ML Model Lab: Baselines vs ML, chronological splits, feature importances, failure analysis."""
     global _cached_ml_experiment
     if _cached_ml_experiment is None:
-        curiosity = ingestion_engine.ingest_curiosity_rems()
+        curiosity = data_loader.get_curiosity_records()
         _cached_ml_experiment = run_model_experiment(curiosity)
     return _cached_ml_experiment
 
@@ -257,7 +264,7 @@ def post_ai_query(
     query: str = Body(..., embed=True)
 ) -> Dict[str, Any]:
     """Grounded Mars AI Science Assistant with evidence tracing and anti-hallucination contract."""
-    curiosity = ingestion_engine.ingest_curiosity_rems()
+    curiosity = data_loader.get_curiosity_records()
     anomalies = detect_multivariate_anomalies(curiosity)[:5]
     latest = curiosity[-1] if curiosity else {}
     meci = calculate_meci(
@@ -281,7 +288,7 @@ def export_dataset(
     format: str = Query("json", description="json or csv")
 ):
     """Export filtered observations with SHA-256 integrity hash."""
-    records = ingestion_engine.ingest_curiosity_rems() if mission == "curiosity" else ingestion_engine.ingest_insight_meteorology()
+    records = data_loader.get_curiosity_records() if mission == "curiosity" else data_loader.get_insight_records()
     
     if format == "csv":
         output = io.StringIO()

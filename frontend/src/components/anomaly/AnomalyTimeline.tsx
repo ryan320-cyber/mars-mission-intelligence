@@ -13,6 +13,8 @@ import { AnomalyItem } from "../../lib/types";
 import { api } from "../../lib/api";
 import { EventReplay } from "./EventReplay";
 
+import { SkeletonLoader } from "../common/SkeletonLoader";
+
 export const AnomalyTimeline: React.FC = () => {
   const [anomalies, setAnomalies] = useState<AnomalyItem[]>([]);
   const [selectedSolForReplay, setSelectedSolForReplay] = useState<number | null>(null);
@@ -34,6 +36,15 @@ export const AnomalyTimeline: React.FC = () => {
       });
     return () => { isMounted = false; };
   }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <SkeletonLoader lines={2} type="card" />
+        <SkeletonLoader lines={6} type="table" />
+      </div>
+    );
+  }
 
   const filtered = anomalies.filter((a) => {
     if (severityFilter === "ALL") return true;

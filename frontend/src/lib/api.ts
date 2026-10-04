@@ -10,7 +10,7 @@ import {
   DataCatalogItem
 } from "./types";
 
-const rawBase = (import.meta.env.VITE_API_URL || 'https://mars-mission-intelligence3.vercel.app').replace(/\/+$/, '');
+const rawBase = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
 const baseUrl = rawBase.replace(/\/api$/, '');
 export const API_BASE = `${baseUrl}/api`;
 

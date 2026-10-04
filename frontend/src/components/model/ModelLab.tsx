@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrainCircuit, BarChart, AlertCircle, CheckCircle, TrendingUp, Info } from "lucide-react";
 import { ModelLabData } from "../../lib/types";
 import { api } from "../../lib/api";
+import { SkeletonLoader } from "../common/SkeletonLoader";
 
 export const ModelLab: React.FC = () => {
   const [modelData, setModelData] = useState<ModelLabData | null>(null);
@@ -25,8 +26,10 @@ export const ModelLab: React.FC = () => {
 
   if (loading || !modelData) {
     return (
-      <div className="p-8 text-center font-mono text-xs text-slate-400">
-        Loading Machine Learning Model Lab & Evaluation Metrics...
+      <div className="space-y-4">
+        <SkeletonLoader lines={2} type="card" />
+        <SkeletonLoader lines={5} type="table" />
+        <SkeletonLoader lines={4} type="card" />
       </div>
     );
   }
@@ -35,6 +38,7 @@ export const ModelLab: React.FC = () => {
   const models = modelData.models_comparison;
   const features = modelData.feature_importances;
   const slices = modelData.slice_error_analysis.seasonal_slices;
+  const failureCases = modelData.slice_error_analysis.dust_storm_failure_cases || [];
 
   return (
     <div className="space-y-6">
@@ -69,7 +73,7 @@ export const ModelLab: React.FC = () => {
         <div className="bg-mars-panel border border-mars-border rounded-lg p-4 space-y-1">
           <span className="text-slate-500 text-[10px]">2. VALIDATION SET (15%)</span>
           <div className="text-base font-bold text-sky-400">{split.val_samples} Sols</div>
-          <div className="text-[11px] text-slate-400">Hyperparameter Regularization Tuning</div>
+          <div className="text-[11px] text-slate-400">{split.val_sol_range || "Hyperparameter Regularization Tuning"}</div>
         </div>
 
         <div className="bg-mars-panel border border-mars-border rounded-lg p-4 space-y-1">
@@ -190,6 +194,29 @@ export const ModelLab: React.FC = () => {
             <span className="font-mono text-mars-amber font-bold block mb-1">SCIENTIFIC LIMITATION REPORT:</span>
             {modelData.slice_error_analysis.failure_case_analysis}
           </div>
+
+          {failureCases.length > 0 && (
+            <div className="space-y-2 pt-2 border-t border-mars-border/60">
+              <span className="text-[10px] text-rose-400 font-bold uppercase tracking-wider block">
+                Logged Dust Storm Outliers (Ls 180°-270°, Error &gt; 14°C)
+              </span>
+              <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1">
+                {failureCases.map((fc, i) => (
+                  <div key={i} className="p-2 bg-rose-950/20 border border-rose-500/30 rounded flex justify-between items-center text-[10px]">
+                    <div>
+                      <span className="font-bold text-white">Sol {fc.sol}</span>
+                      <span className="text-slate-400 ml-2">Ls {fc.solar_longitude_ls}°</span>
+                      <div className="text-[9px] text-slate-500">{fc.phenomenon}</div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-rose-400 font-bold">Δ {fc.error_c} °C</span>
+                      <div className="text-[9px] text-slate-400">Act: {fc.actual_amplitude_c}° / Pred: {fc.predicted_rf_c}°</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

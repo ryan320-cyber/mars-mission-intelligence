@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { AIResponse } from "../../lib/types";
 import { api } from "../../lib/api";
+import { SkeletonLoader } from "../common/SkeletonLoader";
 
 interface MarsAIScientistProps {
   onNavigate: (tabId: string, sol?: number) => void;
@@ -30,10 +31,13 @@ export const MarsAIScientist: React.FC<MarsAIScientistProps> = ({ onNavigate }) 
   const [queryText, setQueryText] = useState<string>("");
   const [response, setResponse] = useState<AIResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleQuery = (text: string) => {
     if (!text.trim()) return;
     setLoading(true);
+    setError(null);
+    setResponse(null);
     setQueryText(text);
     api.queryAI(text)
       .then((res) => {
@@ -42,6 +46,7 @@ export const MarsAIScientist: React.FC<MarsAIScientistProps> = ({ onNavigate }) 
       })
       .catch((err) => {
         console.error("AI query error:", err);
+        setError("The AI Scientist is currently unavailable. Please ensure the backend is running.");
         setLoading(false);
       });
   };
@@ -108,8 +113,24 @@ export const MarsAIScientist: React.FC<MarsAIScientistProps> = ({ onNavigate }) 
         </button>
       </div>
 
+      {/* Loading Skeleton */}
+      {loading && (
+        <SkeletonLoader type="card" lines={5} className="min-h-[160px]" />
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="bg-mars-panel border border-rose-500/40 rounded-xl p-6 flex items-start gap-3 font-mono text-xs">
+          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="text-rose-300 font-bold block mb-1">AI SCIENTIST UNAVAILABLE</span>
+            <span className="text-slate-400">{error}</span>
+          </div>
+        </div>
+      )}
+
       {/* Structured AI Answer Contract Card (Directive 38 & 61: WOW Moment 2) */}
-      {response && (
+      {response && !loading && (
         <div className="bg-mars-panel border border-mars-border rounded-xl p-6 space-y-5 shadow-panel">
           {/* Header & Data Sufficiency Badge (Directive 62) */}
           <div className="flex items-center justify-between border-b border-mars-border pb-3">

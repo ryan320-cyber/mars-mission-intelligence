@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Layers, Activity, ShieldCheck, AlertCircle } from "lucide-react";
 import { VerticalProfileData } from "../../lib/types";
 import { api } from "../../lib/api";
+import { SkeletonLoader } from "../common/SkeletonLoader";
 
 export const VerticalProfileViewer: React.FC = () => {
   const [profiles, setProfiles] = useState<VerticalProfileData[]>([]);
@@ -25,6 +26,15 @@ export const VerticalProfileViewer: React.FC = () => {
       });
     return () => { isMounted = false; };
   }, []);
+
+  if (loading || profiles.length === 0) {
+    return (
+      <div className="space-y-4">
+        <SkeletonLoader lines={2} type="card" />
+        <SkeletonLoader type="chart" />
+      </div>
+    );
+  }
 
   const currentProfile = profiles[selectedIdx];
   const levels = currentProfile?.levels || [];

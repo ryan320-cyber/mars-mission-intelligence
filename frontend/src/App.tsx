@@ -14,6 +14,8 @@ import { JudgeDemoMode } from "./components/demo/JudgeDemoMode";
 import { MissionOverviewData } from "./lib/types";
 import { api } from "./lib/api";
 
+import { ErrorBoundary } from "./components/common/ErrorBoundary";
+
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [isJudgeMode, setIsJudgeMode] = useState<boolean>(false);
@@ -57,51 +59,73 @@ export const App: React.FC = () => {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-3 md:px-6 md:py-4 space-y-4">
         {/* Judge Demo Banner (if active) */}
         {isJudgeMode && (
-          <JudgeDemoMode
-            onStepSelect={(tabId) => handleNavigate(tabId)}
-            onExit={() => setIsJudgeMode(false)}
-          />
+          <ErrorBoundary fallbackTitle="Judge Demo Mode Error">
+            <JudgeDemoMode
+              onStepSelect={(tabId) => handleNavigate(tabId)}
+              onExit={() => setIsJudgeMode(false)}
+            />
+          </ErrorBoundary>
         )}
 
         {/* Tab Content */}
         {activeTab === "overview" && (
-          <MissionOverview data={overviewData} onNavigate={handleNavigate} />
+          <ErrorBoundary fallbackTitle="01 Mission Overview Error">
+            <MissionOverview data={overviewData} onNavigate={handleNavigate} />
+          </ErrorBoundary>
         )}
 
         {activeTab === "explorer" && (
-          <MultiMissionExplorer />
+          <ErrorBoundary fallbackTitle="02 Multi-Mission Explorer Error">
+            <MultiMissionExplorer />
+          </ErrorBoundary>
         )}
 
         {activeTab === "atmospheric" && (
-          <VerticalProfileViewer />
+          <ErrorBoundary fallbackTitle="03 Vertical Atmospheric Profiles Error">
+            <VerticalProfileViewer />
+          </ErrorBoundary>
         )}
 
         {activeTab === "anomaly" && (
-          <AnomalyTimeline />
+          <ErrorBoundary fallbackTitle="04 Anomaly Detector & Replay Error">
+            <AnomalyTimeline />
+          </ErrorBoundary>
         )}
 
         {activeTab === "map" && (
-          <MarsEnvironmentMap />
+          <ErrorBoundary fallbackTitle="05 Mars Spatial Map Error">
+            <MarsEnvironmentMap />
+          </ErrorBoundary>
         )}
 
         {activeTab === "meci" && (
-          <ChallengeIndexCard />
+          <ErrorBoundary fallbackTitle="06 Mission Risk Analyzer (MECI) Error">
+            <ChallengeIndexCard />
+          </ErrorBoundary>
         )}
 
         {activeTab === "model" && (
-          <ModelLab />
+          <ErrorBoundary fallbackTitle="07 ML Model Lab Error">
+            <ModelLab />
+          </ErrorBoundary>
         )}
 
         {activeTab === "ai" && (
-          <MarsAIScientist onNavigate={handleNavigate} />
+          <ErrorBoundary fallbackTitle="08 Grounded AI Scientist Error">
+            <MarsAIScientist onNavigate={handleNavigate} />
+          </ErrorBoundary>
         )}
 
         {activeTab === "catalog" && (
-          <DataCatalog />
+          <ErrorBoundary fallbackTitle="09 NASA Data Catalog Error">
+            <DataCatalog />
+          </ErrorBoundary>
         )}
 
         {activeTab === "notebook" && (
-          <ScienceNotebook />
+          <ErrorBoundary fallbackTitle="10 Science Methodology Error">
+            <ScienceNotebook />
+          </ErrorBoundary>
         )}
       </main>
 

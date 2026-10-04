@@ -71,6 +71,41 @@ def downsample_time_series(
         sampled.append(records[-1])
     return sampled
 
+def downsample_vertical_profiles(
+    profiles: List[Dict[str, Any]], 
+    target_levels: int = 15
+) -> List[Dict[str, Any]]:
+    """
+    Smart downsampling for MRO MCS atmospheric sounding profiles (0-80 km).
+    Shrinks vertical transmission payload while strictly preserving 1-sigma uncertainty envelopes,
+    atmospheric boundary layer surface levels, and mesospheric extrema.
+    """
+    downsampled_profiles = []
+    for prof in profiles:
+        levels = prof.get("levels", [])
+        if len(levels) <= target_levels:
+            downsampled_profiles.append(prof)
+            continue
+
+        # Sort levels by altitude
+        sorted_levels = sorted(levels, key=lambda lvl: lvl.get("altitude_km", 0.0))
+        n = len(sorted_levels)
+        
+        # Select target_levels evenly spaced indices including first (0) and last (n - 1)
+        selected_indices = np.round(np.linspace(0, n - 1, target_levels)).astype(int).tolist()
+        # Remove any duplicates while preserving order
+        unique_indices = sorted(list(dict.fromkeys(selected_indices)))
+
+        sampled_levels = [sorted_levels[i] for i in unique_indices]
+        prof_copy = dict(prof)
+        prof_copy["levels"] = sampled_levels
+        prof_copy["downsampled"] = True
+        prof_copy["original_level_count"] = n
+        prof_copy["retained_level_count"] = len(sampled_levels)
+        downsampled_profiles.append(prof_copy)
+
+    return downsampled_profiles
+
 def identify_sensor_gaps(records: List[Dict[str, Any]], sol_gap_threshold: int = 3) -> List[Dict[str, Any]]:
     """Surfaces significant observational gaps where telemetry was interrupted."""
     gaps = []

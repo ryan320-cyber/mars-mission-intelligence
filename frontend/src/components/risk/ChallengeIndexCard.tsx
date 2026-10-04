@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ShieldAlert, Info, Sliders, Play, RotateCcw, AlertTriangle } from "lucide-react";
 import { ChallengeIndexData } from "../../lib/types";
 import { api } from "../../lib/api";
+import { SkeletonLoader } from "../common/SkeletonLoader";
 
 export const ChallengeIndexCard: React.FC = () => {
   const [indexData, setIndexData] = useState<ChallengeIndexData | null>(null);
@@ -56,8 +57,9 @@ export const ChallengeIndexCard: React.FC = () => {
 
   if (loading || !indexData) {
     return (
-      <div className="p-8 text-center font-mono text-xs text-slate-400">
-        Computing Martian Environmental Challenge Index...
+      <div className="space-y-4">
+        <SkeletonLoader lines={3} type="card" />
+        <SkeletonLoader lines={4} type="table" />
       </div>
     );
   }
