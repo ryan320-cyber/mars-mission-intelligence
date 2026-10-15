@@ -12,8 +12,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { MissionOverviewData } from "../../lib/types";
-
-import { SkeletonLoader } from "../common/SkeletonLoader";
+import { LoadingSkeleton } from "../common/LoadingSkeleton";
 
 interface MissionOverviewProps {
   data: MissionOverviewData | null;
@@ -23,9 +22,20 @@ interface MissionOverviewProps {
 export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNavigate }) => {
   if (!data) {
     return (
-      <div className="space-y-4">
-        <SkeletonLoader lines={4} type="card" />
-        <SkeletonLoader lines={5} type="table" />
+      <div className="space-y-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+          {[...Array(6)].map((_, i) => (
+            <LoadingSkeleton key={i} variant="kpi" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2">
+            <LoadingSkeleton variant="card" title="Acquiring Martian Environmental State..." />
+          </div>
+          <div>
+            <LoadingSkeleton variant="card" title="Synchronizing Intelligence Modules..." />
+          </div>
+        </div>
       </div>
     );
   }

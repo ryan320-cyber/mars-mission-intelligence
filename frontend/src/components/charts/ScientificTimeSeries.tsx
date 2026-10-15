@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useCallback } from "react";
 import { ObservationRecord, SensorGap } from "../../lib/types";
 
 interface SeriesConfig {
@@ -17,6 +17,22 @@ interface ScientificTimeSeriesProps {
   normalized?: boolean;
 }
 
+// O(log N) binary search for instant interactive hover lookups
+function findClosestPointIdx(pts: ObservationRecord[], targetSol: number): number {
+  if (pts.length === 0) return 0;
+  let low = 0;
+  let high = pts.length - 1;
+  while (low <= high) {
+    const mid = (low + high) >> 1;
+    if (pts[mid].sol === targetSol) return mid;
+    if (pts[mid].sol < targetSol) low = mid + 1;
+    else high = mid - 1;
+  }
+  if (low >= pts.length) return pts.length - 1;
+  if (high < 0) return 0;
+  return Math.abs(pts[low].sol - targetSol) < Math.abs(pts[high].sol - targetSol) ? low : high;
+}
+
 export const ScientificTimeSeries: React.FC<ScientificTimeSeriesProps> = ({
   data,
   seriesConfigs,
@@ -26,6 +42,7 @@ export const ScientificTimeSeries: React.FC<ScientificTimeSeriesProps> = ({
   normalized = false
 }) => {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const rafId = useRef<number | null>(null);
 
   // Filter valid data points
   const points = useMemo(() => {
@@ -107,6 +124,40 @@ export const ScientificTimeSeries: React.FC<ScientificTimeSeriesProps> = ({
     });
   }, [points, seriesConfigs, bounds, normalized]);
 
+  const highlightPoints = useMemo(() => {
+    if (!highlightSols || highlightSols.length === 0) return [];
+    const solSet = new Set(highlightSols);
+    return points.filter((p) => solSet.has(p.sol));
+  }, [points, highlightSols]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    if (points.length === 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clientX = e.clientX;
+
+    if (rafId.current !== null) {
+      cancelAnimationFrame(rafId.current);
+    }
+
+    rafId.current = requestAnimationFrame(() => {
+      const relX = ((clientX - rect.left) / rect.width) * svgWidth;
+      if (relX >= padding.left && relX <= svgWidth - padding.right) {
+        const solRange = bounds.maxSol - bounds.minSol;
+        const approxSol = bounds.minSol + ((relX - padding.left) / chartWidth) * solRange;
+        const closest = findClosestPointIdx(points, approxSol);
+        setHoveredIdx((prev) => (prev === closest ? prev : closest));
+      }
+    });
+  }, [points, bounds, padding.left, padding.right, chartWidth, svgWidth]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (rafId.current !== null) {
+      cancelAnimationFrame(rafId.current);
+      rafId.current = null;
+    }
+    setHoveredIdx(null);
+  }, []);
+
   const hoveredPoint = hoveredIdx !== null ? points[hoveredIdx] : null;
 
   return (
@@ -146,26 +197,8 @@ export const ScientificTimeSeries: React.FC<ScientificTimeSeriesProps> = ({
         <svg
           viewBox={`0 0 ${svgWidth} ${height}`}
           className="w-full h-auto cursor-crosshair select-none"
-          onMouseMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const relX = ((e.clientX - rect.left) / rect.width) * svgWidth;
-            if (relX >= padding.left && relX <= svgWidth - padding.right && points.length > 0) {
-              const solRange = bounds.maxSol - bounds.minSol;
-              const approxSol = bounds.minSol + ((relX - padding.left) / chartWidth) * solRange;
-              // Find closest point index
-              let closest = 0;
-              let minDiff = Infinity;
-              points.forEach((p, i) => {
-                const diff = Math.abs(p.sol - approxSol);
-                if (diff < minDiff) {
-                  minDiff = diff;
-                  closest = i;
-                }
-              });
-              setHoveredIdx(closest);
-            }
-          }}
-          onMouseLeave={() => setHoveredIdx(null)}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
           {/* Background Grid Lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((pct) => {
@@ -247,12 +280,10 @@ export const ScientificTimeSeries: React.FC<ScientificTimeSeriesProps> = ({
           ))}
 
           {/* Anomaly Highlight Markers */}
-          {highlightSols.map((sol) => {
-            const pt = points.find((p) => p.sol === sol);
-            if (!pt) return null;
-            const x = getX(sol);
+          {highlightPoints.map((pt) => {
+            const x = getX(pt.sol);
             return (
-              <g key={sol}>
+              <g key={pt.sol}>
                 <line x1={x} y1={padding.top} x2={x} y2={padding.top + chartHeight} stroke="#e07a5f" strokeWidth="1.5" strokeDasharray="3 3" />
                 <circle cx={x} cy={padding.top + 10} r="4" fill="#e07a5f" />
                 <text x={x} y={padding.top - 4} textAnchor="middle" className="text-[9px] fill-mars-amber font-mono font-bold">

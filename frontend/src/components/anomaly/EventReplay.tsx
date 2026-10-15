@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { EventReplayData } from "../../lib/types";
 import { api } from "../../lib/api";
+import { LoadingSkeleton } from "../common/LoadingSkeleton";
 
 interface EventReplayProps {
   targetSol: number;
@@ -62,9 +63,10 @@ export const EventReplay: React.FC<EventReplayProps> = ({ targetSol, onClose }) 
 
   if (loading || !replayData) {
     return (
-      <div className="p-8 text-center font-mono text-xs text-slate-400">
-        Reconstructing Martian Environmental Event (Sol {targetSol})...
-      </div>
+      <LoadingSkeleton 
+        variant="card" 
+        title={`Reconstructing Martian Environmental Event Sequence (Sol ${targetSol})...`} 
+      />
     );
   }
 

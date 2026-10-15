@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { ShieldAlert, Info, Sliders, Play, RotateCcw, AlertTriangle } from "lucide-react";
 import { ChallengeIndexData } from "../../lib/types";
 import { api } from "../../lib/api";
-import { SkeletonLoader } from "../common/SkeletonLoader";
+import { LoadingSkeleton } from "../common/LoadingSkeleton";
 
 export const ChallengeIndexCard: React.FC = () => {
   const [indexData, setIndexData] = useState<ChallengeIndexData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Scenario Simulator State (Directive 32)
   const [tempMultiplier, setTempMultiplier] = useState<number>(1.0);
@@ -15,20 +16,23 @@ export const ChallengeIndexCard: React.FC = () => {
   const [simResult, setSimResult] = useState<any>(null);
   const [simulating, setSimulating] = useState<boolean>(false);
 
-  useEffect(() => {
-    let isMounted = true;
+  const loadIndexData = () => {
+    setLoading(true);
+    setError(null);
     api.getChallengeIndex()
       .then((res) => {
-        if (isMounted) {
-          setIndexData(res);
-          setLoading(false);
-        }
+        setIndexData(res);
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Failed to load Challenge Index:", err);
+        setError("Failed to compute Martian Environmental Challenge Index.");
         setLoading(false);
       });
-    return () => { isMounted = false; };
+  };
+
+  useEffect(() => {
+    loadIndexData();
   }, []);
 
   const runSimulation = () => {
@@ -57,9 +61,23 @@ export const ChallengeIndexCard: React.FC = () => {
 
   if (loading || !indexData) {
     return (
-      <div className="space-y-4">
-        <SkeletonLoader lines={3} type="card" />
-        <SkeletonLoader lines={4} type="table" />
+      <div className="space-y-6">
+        {error ? (
+          <div className="border border-rose-500/30 bg-rose-950/20 backdrop-blur-md rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+            <div className="flex items-center gap-2 text-rose-300">
+              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+              <span>{error}</span>
+            </div>
+            <button
+              onClick={loadIndexData}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 shrink-0"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Retry Index Calculation</span>
+            </button>
+          </div>
+        ) : null}
+        <LoadingSkeleton variant="card" title="Computing Composite Martian Environmental Challenge Index..." />
       </div>
     );
   }

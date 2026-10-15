@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Layers, Activity, ShieldCheck, AlertCircle } from "lucide-react";
+import { Layers, Activity, ShieldCheck, AlertCircle, RotateCcw } from "lucide-react";
 import { VerticalProfileData } from "../../lib/types";
 import { api } from "../../lib/api";
-import { SkeletonLoader } from "../common/SkeletonLoader";
+import { LoadingSkeleton } from "../common/LoadingSkeleton";
 
 export const VerticalProfileViewer: React.FC = () => {
   const [profiles, setProfiles] = useState<VerticalProfileData[]>([]);
@@ -10,31 +10,26 @@ export const VerticalProfileViewer: React.FC = () => {
   const [activeVar, setActiveVar] = useState<"temperature_k" | "pressure_pa" | "dust_extinction_km_inv">("temperature_k");
   const [showUncertainty, setShowUncertainty] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+  const loadProfiles = () => {
+    setLoading(true);
+    setError(null);
     api.getProfiles()
       .then((res) => {
-        if (isMounted) {
-          setProfiles(res.profiles);
-          setLoading(false);
-        }
+        setProfiles(res.profiles || []);
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Failed to load vertical profiles:", err);
+        setError("Failed to retrieve MRO Mars Climate Sounder sounding profiles.");
         setLoading(false);
       });
-    return () => { isMounted = false; };
-  }, []);
+  };
 
-  if (loading || profiles.length === 0) {
-    return (
-      <div className="space-y-4">
-        <SkeletonLoader lines={2} type="card" />
-        <SkeletonLoader type="chart" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    loadProfiles();
+  }, []);
 
   const currentProfile = profiles[selectedIdx];
   const levels = currentProfile?.levels || [];
@@ -100,6 +95,26 @@ export const VerticalProfileViewer: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="border border-rose-500/30 bg-rose-950/20 backdrop-blur-md rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex items-center gap-2 text-rose-300">
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <button
+            onClick={loadProfiles}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 shrink-0"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Retry Sounding Stream</span>
+          </button>
+        </div>
+      )}
+
+      {loading ? (
+        <LoadingSkeleton variant="chart" title="Retrieving MRO Mars Climate Sounder (MCS) Vertical Atmospheric Soundings..." />
+      ) : (
+      <>
       {/* Module Header */}
       <div className="bg-mars-panel border border-mars-border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -304,6 +319,8 @@ export const VerticalProfileViewer: React.FC = () => {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };

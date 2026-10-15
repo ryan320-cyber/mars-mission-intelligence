@@ -12,39 +12,48 @@ import {
 import { AnomalyItem } from "../../lib/types";
 import { api } from "../../lib/api";
 import { EventReplay } from "./EventReplay";
+import { LoadingSkeleton } from "../common/LoadingSkeleton";
+import { RotateCcw } from "lucide-react";
 
-import { SkeletonLoader } from "../common/SkeletonLoader";
+interface AnomalyTimelineProps {
+  initialReplaySol?: number | null;
+  onClearReplay?: () => void;
+}
 
-export const AnomalyTimeline: React.FC = () => {
+export const AnomalyTimeline: React.FC<AnomalyTimelineProps> = ({
+  initialReplaySol = null,
+  onClearReplay
+}) => {
   const [anomalies, setAnomalies] = useState<AnomalyItem[]>([]);
-  const [selectedSolForReplay, setSelectedSolForReplay] = useState<number | null>(null);
+  const [selectedSolForReplay, setSelectedSolForReplay] = useState<number | null>(initialReplaySol);
   const [severityFilter, setSeverityFilter] = useState<string>("ALL");
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
+    if (initialReplaySol !== null && initialReplaySol !== undefined) {
+      setSelectedSolForReplay(initialReplaySol);
+    }
+  }, [initialReplaySol]);
+
+  const loadAnomalies = () => {
+    setLoading(true);
+    setError(null);
     api.getAnomalies()
       .then((res) => {
-        if (isMounted) {
-          setAnomalies(res.multivariate_anomalies || []);
-          setLoading(false);
-        }
+        setAnomalies(res.multivariate_anomalies || []);
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Failed to load anomalies:", err);
+        setError("Failed to stream multivariate anomaly events.");
         setLoading(false);
       });
-    return () => { isMounted = false; };
-  }, []);
+  };
 
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <SkeletonLoader lines={2} type="card" />
-        <SkeletonLoader lines={6} type="table" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    loadAnomalies();
+  }, []);
 
   const filtered = anomalies.filter((a) => {
     if (severityFilter === "ALL") return true;
@@ -89,8 +98,27 @@ export const AnomalyTimeline: React.FC = () => {
       {selectedSolForReplay !== null && (
         <EventReplay
           targetSol={selectedSolForReplay}
-          onClose={() => setSelectedSolForReplay(null)}
+          onClose={() => {
+            setSelectedSolForReplay(null);
+            onClearReplay?.();
+          }}
         />
+      )}
+
+      {error && (
+        <div className="border border-rose-500/30 bg-rose-950/20 backdrop-blur-md rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex items-center gap-2 text-rose-300">
+            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <button
+            onClick={loadAnomalies}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 shrink-0"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Retry Detection</span>
+          </button>
+        </div>
       )}
 
       {/* Anomaly Timeline List (Directive 20) */}
@@ -106,9 +134,7 @@ export const AnomalyTimeline: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="p-8 text-center font-mono text-xs text-slate-400">
-            Running Multivariate Anomaly Detectors...
-          </div>
+          <LoadingSkeleton variant="card" title="Executing Vectorized Multivariate Isolation Forest..." />
         ) : filtered.length === 0 ? (
           <div className="p-8 text-center font-mono text-xs text-slate-400">
             No anomalies found matching current filter.

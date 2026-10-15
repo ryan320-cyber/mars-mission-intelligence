@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { 
   Compass, 
   Download, 
@@ -9,12 +9,13 @@ import {
   AlertCircle,
   Eye,
   SlidersHorizontal,
-  FileSpreadsheet
+  FileSpreadsheet,
+  RotateCcw
 } from "lucide-react";
 import { ObservationRecord, ObservationsResponse } from "../../lib/types";
 import { api, API_BASE } from "../../lib/api";
 import { ScientificTimeSeries } from "../charts/ScientificTimeSeries";
-import { SkeletonLoader } from "../common/SkeletonLoader";
+import { LoadingSkeleton } from "../common/LoadingSkeleton";
 
 export const MultiMissionExplorer: React.FC = () => {
   const [mission, setMission] = useState<string>("curiosity");
@@ -30,29 +31,24 @@ export const MultiMissionExplorer: React.FC = () => {
   const [page, setPage] = useState<number>(0);
   const pageSize = 15;
 
-  useEffect(() => {
-    let isMounted = true;
+  const loadData = () => {
     setLoading(true);
     setError(null);
     api.getObservations(mission, 450)
       .then((res) => {
-        if (isMounted) {
-          setDataResponse(res);
-          setLoading(false);
-          setPage(0);
-        }
+        setDataResponse(res);
+        setLoading(false);
+        setPage(0);
       })
       .catch((err) => {
         console.error("Failed to load observations:", err);
-        if (isMounted) {
-          setError("Failed to fetch mission telemetry. Ensure the backend is running.");
-          setLoading(false);
-        }
+        setError("Failed to stream NASA planetary observations. Please verify network connectivity.");
+        setLoading(false);
       });
+  };
 
-    return () => {
-      isMounted = false;
-    };
+  useEffect(() => {
+    loadData();
   }, [mission]);
 
   const observations = dataResponse?.observations || [];
@@ -69,13 +65,19 @@ export const MultiMissionExplorer: React.FC = () => {
     { key: "wind_speed_mean_ms" as keyof ObservationRecord, label: "Wind Speed", unit: "m/s", color: "#34d399" },
   ];
 
-  // Filtered table rows
-  const filteredRows = observations.filter((obs) => {
-    if (!searchSol) return true;
-    return obs.sol.toString().includes(searchSol) || obs.terrestrial_date.includes(searchSol);
-  });
+  // Memoized filtered table rows to eliminate lag during typing
+  const filteredRows = useMemo(() => {
+    if (!searchSol) return observations;
+    const s = searchSol.trim().toLowerCase();
+    return observations.filter((obs) => {
+      return obs.sol.toString().includes(s) || (obs.terrestrial_date && obs.terrestrial_date.toLowerCase().includes(s));
+    });
+  }, [observations, searchSol]);
 
-  const paginatedRows = filteredRows.slice(page * pageSize, (page + 1) * pageSize);
+  const paginatedRows = useMemo(() => {
+    return filteredRows.slice(page * pageSize, (page + 1) * pageSize);
+  }, [filteredRows, page, pageSize]);
+
   const totalPages = Math.ceil(filteredRows.length / pageSize);
 
   const handleExportCSV = () => {
@@ -152,14 +154,25 @@ export const MultiMissionExplorer: React.FC = () => {
         </div>
       </div>
 
+      {error && (
+        <div className="border border-rose-500/30 bg-rose-950/20 backdrop-blur-md rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex items-center gap-2 text-rose-300">
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <button
+            onClick={loadData}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 shrink-0"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Retry Stream</span>
+          </button>
+        </div>
+      )}
+
       {/* Interactive Time-Series Chart */}
       {loading ? (
-        <SkeletonLoader type="chart" />
-      ) : error ? (
-        <div className="h-64 bg-mars-panel border border-rose-500/40 rounded-lg flex flex-col items-center justify-center gap-3 font-mono text-xs text-slate-400">
-          <AlertCircle className="w-8 h-8 text-rose-400" />
-          <span className="text-rose-300">{error}</span>
-        </div>
+        <LoadingSkeleton variant="chart" title="Streaming NASA Mars Environmental Time-Series..." />
       ) : (
         <ScientificTimeSeries
           data={observations}
@@ -171,6 +184,9 @@ export const MultiMissionExplorer: React.FC = () => {
       )}
 
       {/* Advanced Observations Table (Directive 56) */}
+      {loading ? (
+        <LoadingSkeleton variant="table" title="Indexing NASA Observations..." />
+      ) : (
       <div className="bg-mars-panel border border-mars-border rounded-lg p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -198,9 +214,6 @@ export const MultiMissionExplorer: React.FC = () => {
         </div>
 
         {/* Table */}
-        {loading ? (
-          <SkeletonLoader type="table" lines={8} />
-        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs font-mono">
             <thead className="bg-mars-surface text-slate-400 border-b border-mars-border uppercase text-[10px]">
@@ -243,7 +256,6 @@ export const MultiMissionExplorer: React.FC = () => {
             </tbody>
           </table>
         </div>
-        )}
 
         {/* Pagination */}
         <div className="flex items-center justify-between pt-2 border-t border-mars-border text-xs font-mono text-slate-400">
@@ -266,6 +278,7 @@ export const MultiMissionExplorer: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Observation Detail Modal (Directive 55) */}
       {selectedObs && (
