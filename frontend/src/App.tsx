@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import { Header } from "./components/layout/Header";
 import { MissionOverview } from "./components/overview/MissionOverview";
 import { MultiMissionExplorer } from "./components/explorer/MultiMissionExplorer";
@@ -209,6 +210,9 @@ export const App: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 };
