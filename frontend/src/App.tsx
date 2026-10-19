@@ -76,7 +76,6 @@ export const App: React.FC = () => {
   const [isJudgeMode, setIsJudgeMode] = useState<boolean>(false);
   const [overviewData, setOverviewData] = useState<MissionOverviewData | null>(null);
   const [selectedReplaySol, setSelectedReplaySol] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -84,14 +83,12 @@ export const App: React.FC = () => {
       .then((res) => {
         if (isMounted) {
           setOverviewData(res);
-          setLoading(false);
         }
       })
       .catch((err) => {
         console.warn("Using fallback overview telemetry cache:", err);
         if (isMounted) {
           setOverviewData(FALLBACK_OVERVIEW);
-          setLoading(false);
         }
       });
     return () => { isMounted = false; };

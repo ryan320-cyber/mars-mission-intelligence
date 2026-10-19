@@ -3,9 +3,7 @@ import {
   Bot, 
   Send, 
   Sparkles, 
-  ExternalLink, 
   ShieldCheck, 
-  HelpCircle, 
   AlertCircle,
   Database,
   ArrowRight

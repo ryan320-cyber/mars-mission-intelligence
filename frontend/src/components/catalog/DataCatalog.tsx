@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Database, ExternalLink, ShieldCheck, FileCheck, Layers, BookOpen, AlertCircle } from "lucide-react";
+import { Database, ExternalLink, AlertCircle } from "lucide-react";
 import { DataCatalogItem } from "../../lib/types";
 import { api } from "../../lib/api";
 import { SkeletonLoader } from "../common/SkeletonLoader";

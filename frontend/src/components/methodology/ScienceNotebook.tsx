@@ -1,5 +1,5 @@
 import React from "react";
-import { BookOpen, CheckCircle, Code, Shield, AlertTriangle, Layers, Cpu } from "lucide-react";
+import { BookOpen, Shield, Cpu } from "lucide-react";
 
 export const ScienceNotebook: React.FC = () => {
   return (

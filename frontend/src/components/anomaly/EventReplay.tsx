@@ -4,10 +4,8 @@ import {
   Pause, 
   RotateCcw, 
   Clock, 
-  AlertTriangle, 
   Thermometer, 
   Gauge, 
-  ChevronRight,
   Info
 } from "lucide-react";
 import { EventReplayData } from "../../lib/types";
@@ -27,7 +25,6 @@ export const EventReplay: React.FC<EventReplayProps> = ({ targetSol, onClose }) 
 
   useEffect(() => {
     let isMounted = true;
-    setLoading(true);
     api.getEventReplay(targetSol)
       .then((res) => {
         if (isMounted) {
@@ -39,7 +36,9 @@ export const EventReplay: React.FC<EventReplayProps> = ({ targetSol, onClose }) 
       })
       .catch((err) => {
         console.error("Failed to load event replay:", err);
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       });
     return () => { isMounted = false; };
   }, [targetSol]);

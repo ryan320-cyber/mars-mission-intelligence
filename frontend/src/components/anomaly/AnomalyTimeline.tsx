@@ -2,18 +2,14 @@ import React, { useState, useEffect } from "react";
 import { 
   AlertTriangle, 
   Play, 
-  Filter, 
   Activity, 
-  Sliders, 
-  ShieldAlert,
-  Flame,
-  ArrowRight
+  ArrowRight,
+  RotateCcw
 } from "lucide-react";
 import { AnomalyItem } from "../../lib/types";
 import { api } from "../../lib/api";
 import { EventReplay } from "./EventReplay";
 import { LoadingSkeleton } from "../common/LoadingSkeleton";
-import { RotateCcw } from "lucide-react";
 
 interface AnomalyTimelineProps {
   initialReplaySol?: number | null;
@@ -26,15 +22,15 @@ export const AnomalyTimeline: React.FC<AnomalyTimelineProps> = ({
 }) => {
   const [anomalies, setAnomalies] = useState<AnomalyItem[]>([]);
   const [selectedSolForReplay, setSelectedSolForReplay] = useState<number | null>(initialReplaySol);
+  const [prevInitialSol, setPrevInitialSol] = useState<number | null | undefined>(initialReplaySol);
   const [severityFilter, setSeverityFilter] = useState<string>("ALL");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (initialReplaySol !== null && initialReplaySol !== undefined) {
-      setSelectedSolForReplay(initialReplaySol);
-    }
-  }, [initialReplaySol]);
+  if (initialReplaySol !== prevInitialSol) {
+    setPrevInitialSol(initialReplaySol);
+    setSelectedSolForReplay(initialReplaySol ?? null);
+  }
 
   const loadAnomalies = () => {
     setLoading(true);
@@ -52,7 +48,20 @@ export const AnomalyTimeline: React.FC<AnomalyTimelineProps> = ({
   };
 
   useEffect(() => {
-    loadAnomalies();
+    let isMounted = true;
+    api.getAnomalies()
+      .then((res) => {
+        if (!isMounted) return;
+        setAnomalies(res.multivariate_anomalies || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.error("Failed to load anomalies:", err);
+        setError("Failed to stream multivariate anomaly events.");
+        setLoading(false);
+      });
+    return () => { isMounted = false; };
   }, []);
 
   const filtered = anomalies.filter((a) => {

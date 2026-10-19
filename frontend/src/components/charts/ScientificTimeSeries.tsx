@@ -87,12 +87,12 @@ export const ScientificTimeSeries: React.FC<ScientificTimeSeriesProps> = ({
   const chartHeight = height - padding.top - padding.bottom;
 
   // Coordinate mapping functions
-  const getX = (sol: number) => {
+  const getX = useCallback((sol: number) => {
     const solRange = Math.max(1, bounds.maxSol - bounds.minSol);
     return padding.left + ((sol - bounds.minSol) / solRange) * chartWidth;
-  };
+  }, [bounds.maxSol, bounds.minSol, chartWidth, padding.left]);
 
-  const getY = (val: number, key: string) => {
+  const getY = useCallback((val: number, key: string) => {
     if (normalized) {
       const sBound = bounds.seriesBounds[key] || { min: 0, max: 1 };
       const range = Math.max(0.001, sBound.max - sBound.min);
@@ -102,7 +102,7 @@ export const ScientificTimeSeries: React.FC<ScientificTimeSeriesProps> = ({
       const range = Math.max(0.001, bounds.maxVal - bounds.minVal);
       return padding.top + chartHeight - ((val - bounds.minVal) / range) * chartHeight;
     }
-  };
+  }, [normalized, bounds.seriesBounds, bounds.maxVal, bounds.minVal, chartHeight, padding.top]);
 
   // Build SVG Paths
   const paths = useMemo(() => {
@@ -122,7 +122,7 @@ export const ScientificTimeSeries: React.FC<ScientificTimeSeriesProps> = ({
 
       return { key: cfg.key, d, color: cfg.color };
     });
-  }, [points, seriesConfigs, bounds, normalized]);
+  }, [points, seriesConfigs, getX, getY]);
 
   const highlightPoints = useMemo(() => {
     if (!highlightSols || highlightSols.length === 0) return [];

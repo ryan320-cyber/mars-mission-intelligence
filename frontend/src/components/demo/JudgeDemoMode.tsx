@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Award, ArrowRight, ArrowLeft, CheckCircle2, Play, Sparkles } from "lucide-react";
+import { Award, ArrowRight, ArrowLeft, Play } from "lucide-react";
 
 interface JudgeDemoModeProps {
   onStepSelect: (tabId: string, sol?: number) => void;

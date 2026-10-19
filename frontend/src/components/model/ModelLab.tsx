@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrainCircuit, BarChart, AlertCircle, CheckCircle, TrendingUp, Info, RotateCcw } from "lucide-react";
+import { BrainCircuit, AlertCircle, CheckCircle, TrendingUp, RotateCcw } from "lucide-react";
 import { ModelLabData } from "../../lib/types";
 import { api } from "../../lib/api";
 import { LoadingSkeleton } from "../common/LoadingSkeleton";
@@ -25,7 +25,20 @@ export const ModelLab: React.FC = () => {
   };
 
   useEffect(() => {
-    loadModelData();
+    let isMounted = true;
+    api.getModelLab()
+      .then((res) => {
+        if (!isMounted) return;
+        setModelData(res);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.error("Failed to load Model Lab:", err);
+        setError("Failed to run time-aware ML evaluation pipeline.");
+        setLoading(false);
+      });
+    return () => { isMounted = false; };
   }, []);
 
   if (loading || !modelData) {

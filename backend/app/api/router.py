@@ -264,8 +264,16 @@ def post_ai_query(
     query: str = Body(..., embed=True)
 ) -> Dict[str, Any]:
     """Grounded Mars AI Science Assistant with evidence tracing and anti-hallucination contract."""
+    global _cached_ml_experiment, _cached_multivariate_anomalies
     curiosity = data_loader.get_curiosity_records()
-    anomalies = detect_multivariate_anomalies(curiosity)[:5]
+    insight = data_loader.get_insight_records()
+    
+    if _cached_multivariate_anomalies is None:
+        _cached_multivariate_anomalies = detect_multivariate_anomalies(curiosity)
+    
+    if _cached_ml_experiment is None and len(curiosity) > 100:
+        _cached_ml_experiment = run_model_experiment(curiosity)
+
     latest = curiosity[-1] if curiosity else {}
     meci = calculate_meci(
         temp_amplitude_c=latest.get("temp_amplitude_c"),
@@ -277,8 +285,11 @@ def post_ai_query(
     context = {
         "total_observations": len(curiosity),
         "latest_sol": latest.get("sol"),
-        "anomalies": anomalies,
-        "challenge_index": meci
+        "curiosity_records": curiosity,
+        "insight_records": insight,
+        "anomalies": _cached_multivariate_anomalies or [],
+        "challenge_index": meci,
+        "ml_experiment": _cached_ml_experiment
     }
     return query_mars_ai_scientist(query, context)
 

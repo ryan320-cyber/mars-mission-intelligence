@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { 
   Compass, 
   Download, 
-  Filter, 
-  Layers, 
   Search, 
-  Calendar, 
   AlertCircle,
   Eye,
   SlidersHorizontal,
@@ -24,14 +21,13 @@ export const MultiMissionExplorer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   
   // Controls
-  const [selectedVariable, setSelectedVariable] = useState<string>("pressure_pa");
   const [normalized, setNormalized] = useState<boolean>(false);
   const [searchSol, setSearchSol] = useState<string>("");
   const [selectedObs, setSelectedObs] = useState<ObservationRecord | null>(null);
   const [page, setPage] = useState<number>(0);
   const pageSize = 15;
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     setLoading(true);
     setError(null);
     api.getObservations(mission, 450)
@@ -45,16 +41,30 @@ export const MultiMissionExplorer: React.FC = () => {
         setError("Failed to stream NASA planetary observations. Please verify network connectivity.");
         setLoading(false);
       });
-  };
-
-  useEffect(() => {
-    loadData();
   }, [mission]);
 
-  const observations = dataResponse?.observations || [];
+  useEffect(() => {
+    let isMounted = true;
+    api.getObservations(mission, 450)
+      .then((res) => {
+        if (!isMounted) return;
+        setDataResponse(res);
+        setLoading(false);
+        setPage(0);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.error("Failed to load observations:", err);
+        setError("Failed to stream NASA planetary observations. Please verify network connectivity.");
+        setLoading(false);
+      });
+    return () => { isMounted = false; };
+  }, [mission]);
+
+  const observations = useMemo(() => dataResponse?.observations || [], [dataResponse]);
 
   // Series configs based on mission
-  const seriesConfigs = mission === "curiosity" ? [
+  const seriesConfigs = useMemo(() => mission === "curiosity" ? [
     { key: "pressure_pa" as keyof ObservationRecord, label: "Pressure", unit: "Pa", color: "#38bdf8" },
     { key: "air_temp_max_c" as keyof ObservationRecord, label: "Max Air Temp", unit: "°C", color: "#f43f5e" },
     { key: "air_temp_min_c" as keyof ObservationRecord, label: "Min Air Temp", unit: "°C", color: "#3b82f6" },
@@ -63,7 +73,7 @@ export const MultiMissionExplorer: React.FC = () => {
     { key: "pressure_pa" as keyof ObservationRecord, label: "Pressure", unit: "Pa", color: "#38bdf8" },
     { key: "air_temp_mean_c" as keyof ObservationRecord, label: "Mean Air Temp", unit: "°C", color: "#e07a5f" },
     { key: "wind_speed_mean_ms" as keyof ObservationRecord, label: "Wind Speed", unit: "m/s", color: "#34d399" },
-  ];
+  ], [mission]);
 
   // Memoized filtered table rows to eliminate lag during typing
   const filteredRows = useMemo(() => {
@@ -95,31 +105,37 @@ export const MultiMissionExplorer: React.FC = () => {
             MULTI-MISSION MARS DATA EXPLORER
           </h2>
           <p className="text-xs text-slate-400">
-            Select authentic planetary mission telemetry and inspect time-series and tabular observations.
+            Inspect authentic PDS archived telemetry (Curiosity REMS) alongside calibrated demonstration baselines (InSight TWINS).
           </p>
         </div>
 
-        {/* Mission Switcher Buttons */}
-        <div className="flex items-center gap-2 font-mono text-xs">
+        {/* Mission Switcher Buttons with Provenance Badges */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 font-mono text-xs">
           <button
             onClick={() => setMission("curiosity")}
-            className={`px-3 py-1.5 rounded transition-all ${
+            className={`px-3 py-1.5 rounded transition-all flex flex-col items-start sm:items-center ${
               mission === "curiosity"
                 ? "bg-mars-surface border border-mars-amber text-mars-amber font-bold shadow-glow-amber"
                 : "bg-mars-dark text-slate-400 border border-mars-border hover:text-white"
             }`}
           >
-            Curiosity (Gale Crater)
+            <span>Curiosity (Gale Crater)</span>
+            <span className="text-[9px] uppercase px-1 rounded bg-mars-amber/20 text-mars-amber mt-0.5">
+              Authentic PDS Archive
+            </span>
           </button>
           <button
             onClick={() => setMission("insight")}
-            className={`px-3 py-1.5 rounded transition-all ${
+            className={`px-3 py-1.5 rounded transition-all flex flex-col items-start sm:items-center ${
               mission === "insight"
                 ? "bg-mars-surface border border-mars-cyan text-mars-cyan font-bold shadow-glow-cyan"
                 : "bg-mars-dark text-slate-400 border border-mars-border hover:text-white"
             }`}
           >
-            InSight (Elysium Planitia)
+            <span>InSight (Elysium Planitia)</span>
+            <span className="text-[9px] uppercase px-1 rounded bg-mars-cyan/20 text-mars-cyan mt-0.5">
+              Simulated Baseline
+            </span>
           </button>
         </div>
       </div>
@@ -192,7 +208,9 @@ export const MultiMissionExplorer: React.FC = () => {
           <div className="flex items-center gap-2">
             <FileSpreadsheet className="w-4 h-4 text-mars-cyan" />
             <h3 className="text-sm font-bold font-mono text-white">
-              AUTHENTIC OBSERVATIONS REGISTRY
+              {mission === "curiosity" 
+                ? "AUTHENTIC OBSERVATIONS REGISTRY (GALE CRATER)" 
+                : "CALIBRATED DEMONSTRATION BASELINE (ELYSIUM PLANITIA)"}
             </h3>
             <span className="text-xs font-mono text-slate-400">
               ({filteredRows.length} Sols Matching)
@@ -286,7 +304,13 @@ export const MultiMissionExplorer: React.FC = () => {
           <div className="bg-mars-panel border border-mars-border rounded-xl max-w-lg w-full p-6 space-y-4 shadow-panel font-mono text-xs">
             <div className="flex items-center justify-between border-b border-mars-border pb-3">
               <div>
-                <span className="text-mars-cyan text-[10px]">VERIFIED NASA OBSERVATION</span>
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                  selectedObs.is_synthetic || selectedObs.mission === "insight" ? "text-mars-cyan" : "text-emerald-400"
+                }`}>
+                  {selectedObs.is_synthetic || selectedObs.mission === "insight"
+                    ? "CALIBRATED DEMONSTRATION BASELINE (SYNTHETIC)"
+                    : "CACHED VERIFIED PDS OBSERVATION (GALE CRATER)"}
+                </span>
                 <h3 className="text-lg font-bold text-white">Sol {selectedObs.sol} Telemetry</h3>
               </div>
               <button

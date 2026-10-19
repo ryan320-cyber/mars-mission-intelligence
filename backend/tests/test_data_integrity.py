@@ -56,15 +56,17 @@ def test_synthetic_data_provenance_labeling():
             assert rec.get("provenance_status") == "SYNTHETIC_DEMONSTRATION"
 
 def test_curiosity_observed_data_labeling():
-    """Verify authentic Curiosity records are tagged observed / VERIFIED_AUTHORITATIVE."""
+    """Verify authentic Curiosity records are tagged observed and CACHED_VERIFIED_SOURCE."""
     curiosity_records = data_loader.get_curiosity_records()
     assert len(curiosity_records) >= 4000
 
     sample = curiosity_records[100]
     assert sample.get("data_origin") == "observed"
     assert sample.get("is_synthetic") is False
-    assert sample.get("provenance_status") == "VERIFIED_AUTHORITATIVE"
+    assert sample.get("provenance_status") in ["CACHED_VERIFIED_SOURCE", "VERIFIED_AUTHORITATIVE"]
     assert sample.get("dataset_id") == "MSL-M-REMS-MOD-5-V1.0"
+    assert sample.get("source_authenticity") == "VERIFIED_NASA_ARCHIVE"
+    assert sample.get("structural_validity") == "VALID"
 
 def test_mcs_profiles_uncertainty_and_provenance():
     """Verify MRO MCS vertical profiles include 1-sigma uncertainty and demonstration tagging."""
@@ -102,3 +104,55 @@ def test_dynamic_quality_scorecard_metrics():
     mcs = scorecard["mro_mcs"]
     assert mcs["profiles_count"] == 4
     assert mcs["uncertainty_coverage_pct"] == 100.0
+
+def test_date_validity_does_not_confer_source_verification():
+    """Phase 3 Regression: Date validity establishes calendar validity only, NOT source authenticity."""
+    from app.data.ingestion import ProvenanceStatus
+    # Record with a completely valid calendar date but unverified/unknown source
+    unverified_records = [{
+        "sol": 9999,
+        "terrestrial_date": "2024-06-15",
+        "data_source": "Unknown Scraping Script",
+        "dataset_id": "UNKNOWN_ID"
+    }]
+    # Validate with is_source_verified=False
+    tagged = ingestion_engine._validate_and_tag_curiosity(unverified_records, is_source_verified=False)
+    assert len(tagged) == 1
+    # Must NOT receive CACHED_VERIFIED_SOURCE or VERIFIED_AUTHORITATIVE
+    assert tagged[0]["provenance_status"] == ProvenanceStatus.UNVERIFIED_SOURCE
+    assert tagged[0]["source_authenticity"] == "UNVERIFIED"
+    assert tagged[0]["structural_validity"] == "VALID"
+
+def test_distinct_provenance_states():
+    """Phase 3 Regression: Verify all distinct provenance states are defined and non-overlapping."""
+    from app.data.ingestion import ProvenanceStatus
+    states = [
+        ProvenanceStatus.VERIFIED_SOURCE,
+        ProvenanceStatus.CACHED_VERIFIED_SOURCE,
+        ProvenanceStatus.UNVERIFIED_SOURCE,
+        ProvenanceStatus.SYNTHETIC,
+        ProvenanceStatus.DERIVED,
+        ProvenanceStatus.UNAVAILABLE
+    ]
+    # All 6 primary states must have distinct values
+    assert len(set(states)) == 6
+
+def test_processed_curiosity_records_provenance_status():
+    """Phase 3 Regression: Verify _process_curiosity_records and scorecard use CACHED_VERIFIED_SOURCE."""
+    from app.data.ingestion import ingestion_engine, ProvenanceStatus
+    raw_mock = [{
+        "sol": "5000",
+        "terrestrial_date": "2026-09-01",
+        "ls": "180.0",
+        "min_temp": "-75.0",
+        "max_temp": "-10.0",
+        "pressure": "850.0"
+    }]
+    processed = ingestion_engine._process_curiosity_records(raw_mock)
+    assert len(processed) == 1
+    assert processed[0]["provenance_status"] == ProvenanceStatus.CACHED_VERIFIED_SOURCE.value
+
+    scorecard = ingestion_engine.generate_quality_scorecard()
+    curio_card = scorecard.get("curiosity_msl", {})
+    assert curio_card.get("provenance_status") == ProvenanceStatus.CACHED_VERIFIED_SOURCE.value
+

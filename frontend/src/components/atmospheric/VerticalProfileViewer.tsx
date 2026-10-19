@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, Activity, ShieldCheck, AlertCircle, RotateCcw } from "lucide-react";
+import { Layers, ShieldCheck, AlertCircle, RotateCcw } from "lucide-react";
 import { VerticalProfileData } from "../../lib/types";
 import { api } from "../../lib/api";
 import { LoadingSkeleton } from "../common/LoadingSkeleton";
@@ -28,7 +28,20 @@ export const VerticalProfileViewer: React.FC = () => {
   };
 
   useEffect(() => {
-    loadProfiles();
+    let isMounted = true;
+    api.getProfiles()
+      .then((res) => {
+        if (!isMounted) return;
+        setProfiles(res.profiles || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.error("Failed to load vertical profiles:", err);
+        setError("Failed to retrieve MRO Mars Climate Sounder sounding profiles.");
+        setLoading(false);
+      });
+    return () => { isMounted = false; };
   }, []);
 
   const currentProfile = profiles[selectedIdx];
@@ -122,9 +135,12 @@ export const VerticalProfileViewer: React.FC = () => {
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <Layers className="w-5 h-5 text-mars-amber" />
             ATMOSPHERIC SOUNDING & VERTICAL PROFILES
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-mars-amber/20 text-mars-amber border border-mars-amber/40">
+              SYNTHETIC DEMONSTRATION
+            </span>
           </h2>
           <p className="text-xs text-slate-400">
-            NASA MRO Mars Climate Sounder (MCS) Level 2 Derived Data Records: Limb soundings from 0 km to 80 km altitude.
+            MRO Mars Climate Sounder (MCS) Parameterized Reference Soundings: Demonstration profiles from 0 km to 80 km calibrated against limb observations.
           </p>
         </div>
 

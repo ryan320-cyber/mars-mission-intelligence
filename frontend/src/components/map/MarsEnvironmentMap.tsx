@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Globe2, Layers, Info, Compass, Shield } from "lucide-react";
+import { Globe2 } from "lucide-react";
 
 interface SiteLocation {
   id: string;

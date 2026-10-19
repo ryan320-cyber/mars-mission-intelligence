@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ShieldAlert, Info, Sliders, Play, RotateCcw, AlertTriangle } from "lucide-react";
+import { ShieldAlert, Sliders, Play, RotateCcw, AlertTriangle } from "lucide-react";
 import { ChallengeIndexData } from "../../lib/types";
 import { api } from "../../lib/api";
 import { LoadingSkeleton } from "../common/LoadingSkeleton";
@@ -32,7 +32,20 @@ export const ChallengeIndexCard: React.FC = () => {
   };
 
   useEffect(() => {
-    loadIndexData();
+    let isMounted = true;
+    api.getChallengeIndex()
+      .then((res) => {
+        if (!isMounted) return;
+        setIndexData(res);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        console.error("Failed to load Challenge Index:", err);
+        setError("Failed to compute Martian Environmental Challenge Index.");
+        setLoading(false);
+      });
+    return () => { isMounted = false; };
   }, []);
 
   const runSimulation = () => {

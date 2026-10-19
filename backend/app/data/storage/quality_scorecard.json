@@ -1,7 +1,7 @@
 {
   "curiosity_msl": {
     "dataset_name": "Curiosity (MSL) REMS Daily Environmental Observations",
-    "provenance_status": "VERIFIED_AUTHORITATIVE",
+    "provenance_status": "CACHED_VERIFIED_SOURCE",
     "is_synthetic": false,
     "data_origin": "observed",
     "total_source_records": 4745,
@@ -55,5 +55,5 @@
     "uncertainty_status": "PASS (Explicit 1-sigma uncertainty bands present per level)",
     "assessment": "PARAMETERIZED_SOUNDING_DEMONSTRATION"
   },
-  "generated_at_utc": "2026-10-19T22:06:33.062412+00:00"
+  "generated_at_utc": "2026-10-19T22:53:30.770086+00:00"
 }
