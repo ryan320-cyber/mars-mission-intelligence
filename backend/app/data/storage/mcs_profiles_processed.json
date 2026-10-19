@@ -18,7 +18,9 @@
         "temperature_c": -58.15,
         "temperature_uncertainty_k": 1.5,
         "dust_extinction_km_inv": 0.001,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 3.3,
@@ -27,7 +29,9 @@
         "temperature_c": -63.48,
         "temperature_uncertainty_k": 1.7,
         "dust_extinction_km_inv": 0.00079,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 6.7,
@@ -36,7 +40,9 @@
         "temperature_c": -68.82,
         "temperature_uncertainty_k": 1.9,
         "dust_extinction_km_inv": 0.00062,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 10.0,
@@ -45,7 +51,9 @@
         "temperature_c": -74.15,
         "temperature_uncertainty_k": 2.1,
         "dust_extinction_km_inv": 0.00049,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 13.3,
@@ -54,7 +62,9 @@
         "temperature_c": -79.48,
         "temperature_uncertainty_k": 2.3,
         "dust_extinction_km_inv": 0.00039,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 16.7,
@@ -63,7 +73,9 @@
         "temperature_c": -84.82,
         "temperature_uncertainty_k": 2.5,
         "dust_extinction_km_inv": 0.0003,
-        "water_ice_extinction_km_inv": 5e-05
+        "water_ice_extinction_km_inv": 5e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 20.0,
@@ -72,7 +84,9 @@
         "temperature_c": -90.15,
         "temperature_uncertainty_k": 2.7,
         "dust_extinction_km_inv": 0.00024,
-        "water_ice_extinction_km_inv": 0.00017
+        "water_ice_extinction_km_inv": 0.00017,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 23.3,
@@ -81,7 +95,9 @@
         "temperature_c": -95.48,
         "temperature_uncertainty_k": 2.9,
         "dust_extinction_km_inv": 0.00019,
-        "water_ice_extinction_km_inv": 0.0004
+        "water_ice_extinction_km_inv": 0.0004,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 26.7,
@@ -90,7 +106,9 @@
         "temperature_c": -100.82,
         "temperature_uncertainty_k": 3.1,
         "dust_extinction_km_inv": 0.00015,
-        "water_ice_extinction_km_inv": 0.00067
+        "water_ice_extinction_km_inv": 0.00067,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 30.0,
@@ -99,7 +117,9 @@
         "temperature_c": -106.15,
         "temperature_uncertainty_k": 3.3,
         "dust_extinction_km_inv": 0.00012,
-        "water_ice_extinction_km_inv": 0.0008
+        "water_ice_extinction_km_inv": 0.0008,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 33.3,
@@ -108,7 +128,9 @@
         "temperature_c": -111.48,
         "temperature_uncertainty_k": 3.5,
         "dust_extinction_km_inv": 9e-05,
-        "water_ice_extinction_km_inv": 0.00067
+        "water_ice_extinction_km_inv": 0.00067,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 36.7,
@@ -117,7 +139,9 @@
         "temperature_c": -116.82,
         "temperature_uncertainty_k": 3.7,
         "dust_extinction_km_inv": 7e-05,
-        "water_ice_extinction_km_inv": 0.0004
+        "water_ice_extinction_km_inv": 0.0004,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 40.0,
@@ -126,7 +150,9 @@
         "temperature_c": -122.15,
         "temperature_uncertainty_k": 3.9,
         "dust_extinction_km_inv": 6e-05,
-        "water_ice_extinction_km_inv": 0.00017
+        "water_ice_extinction_km_inv": 0.00017,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 43.3,
@@ -135,7 +161,9 @@
         "temperature_c": -127.48,
         "temperature_uncertainty_k": 4.1,
         "dust_extinction_km_inv": 5e-05,
-        "water_ice_extinction_km_inv": 5e-05
+        "water_ice_extinction_km_inv": 5e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 46.7,
@@ -144,7 +172,9 @@
         "temperature_c": -128.82,
         "temperature_uncertainty_k": 4.3,
         "dust_extinction_km_inv": 4e-05,
-        "water_ice_extinction_km_inv": 1e-05
+        "water_ice_extinction_km_inv": 1e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 50.0,
@@ -153,7 +183,9 @@
         "temperature_c": -126.15,
         "temperature_uncertainty_k": 4.5,
         "dust_extinction_km_inv": 3e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 53.3,
@@ -162,7 +194,9 @@
         "temperature_c": -123.48,
         "temperature_uncertainty_k": 4.7,
         "dust_extinction_km_inv": 2e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 56.7,
@@ -171,7 +205,9 @@
         "temperature_c": -120.82,
         "temperature_uncertainty_k": 4.9,
         "dust_extinction_km_inv": 2e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 60.0,
@@ -180,7 +216,9 @@
         "temperature_c": -118.15,
         "temperature_uncertainty_k": 5.1,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 63.3,
@@ -189,7 +227,9 @@
         "temperature_c": -115.48,
         "temperature_uncertainty_k": 5.3,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 66.7,
@@ -198,7 +238,9 @@
         "temperature_c": -112.82,
         "temperature_uncertainty_k": 5.5,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 70.0,
@@ -207,7 +249,9 @@
         "temperature_c": -110.15,
         "temperature_uncertainty_k": 5.7,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 73.3,
@@ -216,7 +260,9 @@
         "temperature_c": -107.48,
         "temperature_uncertainty_k": 5.9,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 76.7,
@@ -225,7 +271,9 @@
         "temperature_c": -104.82,
         "temperature_uncertainty_k": 6.1,
         "dust_extinction_km_inv": 0.0,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 80.0,
@@ -234,9 +282,16 @@
         "temperature_c": -102.15,
         "temperature_uncertainty_k": 6.3,
         "dust_extinction_km_inv": 0.0,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       }
-    ]
+    ],
+    "data_origin": "simulated",
+    "data_provenance": "DEMONSTRATION DATA",
+    "is_synthetic": true,
+    "provenance_status": "SYNTHETIC_DEMONSTRATION",
+    "scientific_note": "Parameterized vertical profiles derived from hydrostatic scale height H=11.1km and MCS DDR climatology."
   },
   {
     "profile_id": "MCS_DDR_GALE_CRATER_DUST_EVENT",
@@ -257,7 +312,9 @@
         "temperature_c": -38.15,
         "temperature_uncertainty_k": 1.5,
         "dust_extinction_km_inv": 0.025,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 3.3,
@@ -266,7 +323,9 @@
         "temperature_c": -43.48,
         "temperature_uncertainty_k": 1.7,
         "dust_extinction_km_inv": 0.0197,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 6.7,
@@ -275,7 +334,9 @@
         "temperature_c": -48.82,
         "temperature_uncertainty_k": 1.9,
         "dust_extinction_km_inv": 0.01553,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 10.0,
@@ -284,7 +345,9 @@
         "temperature_c": -54.15,
         "temperature_uncertainty_k": 2.1,
         "dust_extinction_km_inv": 0.01224,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 13.3,
@@ -293,7 +356,9 @@
         "temperature_c": -59.48,
         "temperature_uncertainty_k": 2.3,
         "dust_extinction_km_inv": 0.00965,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 16.7,
@@ -302,7 +367,9 @@
         "temperature_c": -64.82,
         "temperature_uncertainty_k": 2.5,
         "dust_extinction_km_inv": 0.0076,
-        "water_ice_extinction_km_inv": 5e-05
+        "water_ice_extinction_km_inv": 5e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 20.0,
@@ -311,7 +378,9 @@
         "temperature_c": -70.15,
         "temperature_uncertainty_k": 2.7,
         "dust_extinction_km_inv": 0.00599,
-        "water_ice_extinction_km_inv": 0.00017
+        "water_ice_extinction_km_inv": 0.00017,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 23.3,
@@ -320,7 +389,9 @@
         "temperature_c": -75.48,
         "temperature_uncertainty_k": 2.9,
         "dust_extinction_km_inv": 0.00472,
-        "water_ice_extinction_km_inv": 0.0004
+        "water_ice_extinction_km_inv": 0.0004,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 26.7,
@@ -329,7 +400,9 @@
         "temperature_c": -80.82,
         "temperature_uncertainty_k": 3.1,
         "dust_extinction_km_inv": 0.00372,
-        "water_ice_extinction_km_inv": 0.00067
+        "water_ice_extinction_km_inv": 0.00067,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 30.0,
@@ -338,7 +411,9 @@
         "temperature_c": -86.15,
         "temperature_uncertainty_k": 3.3,
         "dust_extinction_km_inv": 0.00293,
-        "water_ice_extinction_km_inv": 0.0008
+        "water_ice_extinction_km_inv": 0.0008,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 33.3,
@@ -347,7 +422,9 @@
         "temperature_c": -91.48,
         "temperature_uncertainty_k": 3.5,
         "dust_extinction_km_inv": 0.00231,
-        "water_ice_extinction_km_inv": 0.00067
+        "water_ice_extinction_km_inv": 0.00067,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 36.7,
@@ -356,7 +433,9 @@
         "temperature_c": -96.82,
         "temperature_uncertainty_k": 3.7,
         "dust_extinction_km_inv": 0.00182,
-        "water_ice_extinction_km_inv": 0.0004
+        "water_ice_extinction_km_inv": 0.0004,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 40.0,
@@ -365,7 +444,9 @@
         "temperature_c": -102.15,
         "temperature_uncertainty_k": 3.9,
         "dust_extinction_km_inv": 0.00144,
-        "water_ice_extinction_km_inv": 0.00017
+        "water_ice_extinction_km_inv": 0.00017,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 43.3,
@@ -374,7 +455,9 @@
         "temperature_c": -107.48,
         "temperature_uncertainty_k": 4.1,
         "dust_extinction_km_inv": 0.00113,
-        "water_ice_extinction_km_inv": 5e-05
+        "water_ice_extinction_km_inv": 5e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 46.7,
@@ -383,7 +466,9 @@
         "temperature_c": -108.82,
         "temperature_uncertainty_k": 4.3,
         "dust_extinction_km_inv": 0.00089,
-        "water_ice_extinction_km_inv": 1e-05
+        "water_ice_extinction_km_inv": 1e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 50.0,
@@ -392,7 +477,9 @@
         "temperature_c": -106.15,
         "temperature_uncertainty_k": 4.5,
         "dust_extinction_km_inv": 0.0007,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 53.3,
@@ -401,7 +488,9 @@
         "temperature_c": -103.48,
         "temperature_uncertainty_k": 4.7,
         "dust_extinction_km_inv": 0.00055,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 56.7,
@@ -410,7 +499,9 @@
         "temperature_c": -100.82,
         "temperature_uncertainty_k": 4.9,
         "dust_extinction_km_inv": 0.00044,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 60.0,
@@ -419,7 +510,9 @@
         "temperature_c": -98.15,
         "temperature_uncertainty_k": 5.1,
         "dust_extinction_km_inv": 0.00034,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 63.3,
@@ -428,7 +521,9 @@
         "temperature_c": -95.48,
         "temperature_uncertainty_k": 5.3,
         "dust_extinction_km_inv": 0.00027,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 66.7,
@@ -437,7 +532,9 @@
         "temperature_c": -92.82,
         "temperature_uncertainty_k": 5.5,
         "dust_extinction_km_inv": 0.00021,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 70.0,
@@ -446,7 +543,9 @@
         "temperature_c": -90.15,
         "temperature_uncertainty_k": 5.7,
         "dust_extinction_km_inv": 0.00017,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 73.3,
@@ -455,7 +554,9 @@
         "temperature_c": -87.48,
         "temperature_uncertainty_k": 5.9,
         "dust_extinction_km_inv": 0.00013,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 76.7,
@@ -464,7 +565,9 @@
         "temperature_c": -84.82,
         "temperature_uncertainty_k": 6.1,
         "dust_extinction_km_inv": 0.0001,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 80.0,
@@ -473,9 +576,16 @@
         "temperature_c": -82.15,
         "temperature_uncertainty_k": 6.3,
         "dust_extinction_km_inv": 8e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       }
-    ]
+    ],
+    "data_origin": "simulated",
+    "data_provenance": "DEMONSTRATION DATA",
+    "is_synthetic": true,
+    "provenance_status": "SYNTHETIC_DEMONSTRATION",
+    "scientific_note": "Parameterized vertical profiles derived from hydrostatic scale height H=11.1km and MCS DDR climatology."
   },
   {
     "profile_id": "MCS_DDR_ELYSIUM_PLANITIA",
@@ -496,7 +606,9 @@
         "temperature_c": -51.15,
         "temperature_uncertainty_k": 1.5,
         "dust_extinction_km_inv": 0.003,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 3.3,
@@ -505,7 +617,9 @@
         "temperature_c": -56.48,
         "temperature_uncertainty_k": 1.7,
         "dust_extinction_km_inv": 0.00236,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 6.7,
@@ -514,7 +628,9 @@
         "temperature_c": -61.82,
         "temperature_uncertainty_k": 1.9,
         "dust_extinction_km_inv": 0.00186,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 10.0,
@@ -523,7 +639,9 @@
         "temperature_c": -67.15,
         "temperature_uncertainty_k": 2.1,
         "dust_extinction_km_inv": 0.00147,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 13.3,
@@ -532,7 +650,9 @@
         "temperature_c": -72.48,
         "temperature_uncertainty_k": 2.3,
         "dust_extinction_km_inv": 0.00116,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 16.7,
@@ -541,7 +661,9 @@
         "temperature_c": -77.82,
         "temperature_uncertainty_k": 2.5,
         "dust_extinction_km_inv": 0.00091,
-        "water_ice_extinction_km_inv": 5e-05
+        "water_ice_extinction_km_inv": 5e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 20.0,
@@ -550,7 +672,9 @@
         "temperature_c": -83.15,
         "temperature_uncertainty_k": 2.7,
         "dust_extinction_km_inv": 0.00072,
-        "water_ice_extinction_km_inv": 0.00017
+        "water_ice_extinction_km_inv": 0.00017,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 23.3,
@@ -559,7 +683,9 @@
         "temperature_c": -88.48,
         "temperature_uncertainty_k": 2.9,
         "dust_extinction_km_inv": 0.00057,
-        "water_ice_extinction_km_inv": 0.0004
+        "water_ice_extinction_km_inv": 0.0004,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 26.7,
@@ -568,7 +694,9 @@
         "temperature_c": -93.82,
         "temperature_uncertainty_k": 3.1,
         "dust_extinction_km_inv": 0.00045,
-        "water_ice_extinction_km_inv": 0.00067
+        "water_ice_extinction_km_inv": 0.00067,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 30.0,
@@ -577,7 +705,9 @@
         "temperature_c": -99.15,
         "temperature_uncertainty_k": 3.3,
         "dust_extinction_km_inv": 0.00035,
-        "water_ice_extinction_km_inv": 0.0008
+        "water_ice_extinction_km_inv": 0.0008,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 33.3,
@@ -586,7 +716,9 @@
         "temperature_c": -104.48,
         "temperature_uncertainty_k": 3.5,
         "dust_extinction_km_inv": 0.00028,
-        "water_ice_extinction_km_inv": 0.00067
+        "water_ice_extinction_km_inv": 0.00067,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 36.7,
@@ -595,7 +727,9 @@
         "temperature_c": -109.82,
         "temperature_uncertainty_k": 3.7,
         "dust_extinction_km_inv": 0.00022,
-        "water_ice_extinction_km_inv": 0.0004
+        "water_ice_extinction_km_inv": 0.0004,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 40.0,
@@ -604,7 +738,9 @@
         "temperature_c": -115.15,
         "temperature_uncertainty_k": 3.9,
         "dust_extinction_km_inv": 0.00017,
-        "water_ice_extinction_km_inv": 0.00017
+        "water_ice_extinction_km_inv": 0.00017,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 43.3,
@@ -613,7 +749,9 @@
         "temperature_c": -120.48,
         "temperature_uncertainty_k": 4.1,
         "dust_extinction_km_inv": 0.00014,
-        "water_ice_extinction_km_inv": 5e-05
+        "water_ice_extinction_km_inv": 5e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 46.7,
@@ -622,7 +760,9 @@
         "temperature_c": -121.82,
         "temperature_uncertainty_k": 4.3,
         "dust_extinction_km_inv": 0.00011,
-        "water_ice_extinction_km_inv": 1e-05
+        "water_ice_extinction_km_inv": 1e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 50.0,
@@ -631,7 +771,9 @@
         "temperature_c": -119.15,
         "temperature_uncertainty_k": 4.5,
         "dust_extinction_km_inv": 8e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 53.3,
@@ -640,7 +782,9 @@
         "temperature_c": -116.48,
         "temperature_uncertainty_k": 4.7,
         "dust_extinction_km_inv": 7e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 56.7,
@@ -649,7 +793,9 @@
         "temperature_c": -113.82,
         "temperature_uncertainty_k": 4.9,
         "dust_extinction_km_inv": 5e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 60.0,
@@ -658,7 +804,9 @@
         "temperature_c": -111.15,
         "temperature_uncertainty_k": 5.1,
         "dust_extinction_km_inv": 4e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 63.3,
@@ -667,7 +815,9 @@
         "temperature_c": -108.48,
         "temperature_uncertainty_k": 5.3,
         "dust_extinction_km_inv": 3e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 66.7,
@@ -676,7 +826,9 @@
         "temperature_c": -105.82,
         "temperature_uncertainty_k": 5.5,
         "dust_extinction_km_inv": 3e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 70.0,
@@ -685,7 +837,9 @@
         "temperature_c": -103.15,
         "temperature_uncertainty_k": 5.7,
         "dust_extinction_km_inv": 2e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 73.3,
@@ -694,7 +848,9 @@
         "temperature_c": -100.48,
         "temperature_uncertainty_k": 5.9,
         "dust_extinction_km_inv": 2e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 76.7,
@@ -703,7 +859,9 @@
         "temperature_c": -97.82,
         "temperature_uncertainty_k": 6.1,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 80.0,
@@ -712,9 +870,16 @@
         "temperature_c": -95.15,
         "temperature_uncertainty_k": 6.3,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       }
-    ]
+    ],
+    "data_origin": "simulated",
+    "data_provenance": "DEMONSTRATION DATA",
+    "is_synthetic": true,
+    "provenance_status": "SYNTHETIC_DEMONSTRATION",
+    "scientific_note": "Parameterized vertical profiles derived from hydrostatic scale height H=11.1km and MCS DDR climatology."
   },
   {
     "profile_id": "MCS_DDR_POLAR_WINTER",
@@ -735,7 +900,9 @@
         "temperature_c": -123.15,
         "temperature_uncertainty_k": 1.5,
         "dust_extinction_km_inv": 0.0005,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 3.3,
@@ -744,7 +911,9 @@
         "temperature_c": -128.48,
         "temperature_uncertainty_k": 1.7,
         "dust_extinction_km_inv": 0.00039,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 6.7,
@@ -753,7 +922,9 @@
         "temperature_c": -133.82,
         "temperature_uncertainty_k": 1.9,
         "dust_extinction_km_inv": 0.00031,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 10.0,
@@ -762,7 +933,9 @@
         "temperature_c": -139.15,
         "temperature_uncertainty_k": 2.1,
         "dust_extinction_km_inv": 0.00024,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 13.3,
@@ -771,7 +944,9 @@
         "temperature_c": -144.48,
         "temperature_uncertainty_k": 2.3,
         "dust_extinction_km_inv": 0.00019,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 16.7,
@@ -780,7 +955,9 @@
         "temperature_c": -149.82,
         "temperature_uncertainty_k": 2.5,
         "dust_extinction_km_inv": 0.00015,
-        "water_ice_extinction_km_inv": 5e-05
+        "water_ice_extinction_km_inv": 5e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 20.0,
@@ -789,7 +966,9 @@
         "temperature_c": -155.15,
         "temperature_uncertainty_k": 2.7,
         "dust_extinction_km_inv": 0.00012,
-        "water_ice_extinction_km_inv": 0.00017
+        "water_ice_extinction_km_inv": 0.00017,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 23.3,
@@ -798,7 +977,9 @@
         "temperature_c": -160.48,
         "temperature_uncertainty_k": 2.9,
         "dust_extinction_km_inv": 9e-05,
-        "water_ice_extinction_km_inv": 0.0004
+        "water_ice_extinction_km_inv": 0.0004,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 26.7,
@@ -807,7 +988,9 @@
         "temperature_c": -165.82,
         "temperature_uncertainty_k": 3.1,
         "dust_extinction_km_inv": 7e-05,
-        "water_ice_extinction_km_inv": 0.00067
+        "water_ice_extinction_km_inv": 0.00067,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 30.0,
@@ -816,7 +999,9 @@
         "temperature_c": -171.15,
         "temperature_uncertainty_k": 3.3,
         "dust_extinction_km_inv": 6e-05,
-        "water_ice_extinction_km_inv": 0.0008
+        "water_ice_extinction_km_inv": 0.0008,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 33.3,
@@ -825,7 +1010,9 @@
         "temperature_c": -176.48,
         "temperature_uncertainty_k": 3.5,
         "dust_extinction_km_inv": 5e-05,
-        "water_ice_extinction_km_inv": 0.00067
+        "water_ice_extinction_km_inv": 0.00067,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 36.7,
@@ -834,7 +1021,9 @@
         "temperature_c": -181.82,
         "temperature_uncertainty_k": 3.7,
         "dust_extinction_km_inv": 4e-05,
-        "water_ice_extinction_km_inv": 0.0004
+        "water_ice_extinction_km_inv": 0.0004,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 40.0,
@@ -843,7 +1032,9 @@
         "temperature_c": -187.15,
         "temperature_uncertainty_k": 3.9,
         "dust_extinction_km_inv": 3e-05,
-        "water_ice_extinction_km_inv": 0.00017
+        "water_ice_extinction_km_inv": 0.00017,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 43.3,
@@ -852,7 +1043,9 @@
         "temperature_c": -192.48,
         "temperature_uncertainty_k": 4.1,
         "dust_extinction_km_inv": 2e-05,
-        "water_ice_extinction_km_inv": 5e-05
+        "water_ice_extinction_km_inv": 5e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 46.7,
@@ -861,7 +1054,9 @@
         "temperature_c": -193.82,
         "temperature_uncertainty_k": 4.3,
         "dust_extinction_km_inv": 2e-05,
-        "water_ice_extinction_km_inv": 1e-05
+        "water_ice_extinction_km_inv": 1e-05,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 50.0,
@@ -870,7 +1065,9 @@
         "temperature_c": -191.15,
         "temperature_uncertainty_k": 4.5,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 53.3,
@@ -879,7 +1076,9 @@
         "temperature_c": -188.48,
         "temperature_uncertainty_k": 4.7,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 56.7,
@@ -888,7 +1087,9 @@
         "temperature_c": -185.82,
         "temperature_uncertainty_k": 4.9,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 60.0,
@@ -897,7 +1098,9 @@
         "temperature_c": -183.15,
         "temperature_uncertainty_k": 5.1,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 63.3,
@@ -906,7 +1109,9 @@
         "temperature_c": -180.48,
         "temperature_uncertainty_k": 5.3,
         "dust_extinction_km_inv": 1e-05,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 66.7,
@@ -915,7 +1120,9 @@
         "temperature_c": -177.82,
         "temperature_uncertainty_k": 5.5,
         "dust_extinction_km_inv": 0.0,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 70.0,
@@ -924,7 +1131,9 @@
         "temperature_c": -175.15,
         "temperature_uncertainty_k": 5.7,
         "dust_extinction_km_inv": 0.0,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 73.3,
@@ -933,7 +1142,9 @@
         "temperature_c": -172.48,
         "temperature_uncertainty_k": 5.9,
         "dust_extinction_km_inv": 0.0,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 76.7,
@@ -942,7 +1153,9 @@
         "temperature_c": -169.82,
         "temperature_uncertainty_k": 6.1,
         "dust_extinction_km_inv": 0.0,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       },
       {
         "altitude_km": 80.0,
@@ -951,8 +1164,15 @@
         "temperature_c": -167.15,
         "temperature_uncertainty_k": 6.3,
         "dust_extinction_km_inv": 0.0,
-        "water_ice_extinction_km_inv": 0.0
+        "water_ice_extinction_km_inv": 0.0,
+        "data_origin": "simulated",
+        "is_synthetic": true
       }
-    ]
+    ],
+    "data_origin": "simulated",
+    "data_provenance": "DEMONSTRATION DATA",
+    "is_synthetic": true,
+    "provenance_status": "SYNTHETIC_DEMONSTRATION",
+    "scientific_note": "Parameterized vertical profiles derived from hydrostatic scale height H=11.1km and MCS DDR climatology."
   }
 ]

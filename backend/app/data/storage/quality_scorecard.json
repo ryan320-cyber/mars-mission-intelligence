@@ -1,27 +1,59 @@
 {
   "curiosity_msl": {
-    "total_observations": 4745,
+    "dataset_name": "Curiosity (MSL) REMS Daily Environmental Observations",
+    "provenance_status": "VERIFIED_AUTHORITATIVE",
+    "is_synthetic": false,
+    "data_origin": "observed",
+    "total_source_records": 4745,
+    "valid_records_count": 4745,
+    "rejected_records_count": 0,
     "sol_range": "Sol 1 to Sol 4995",
+    "observation_dates": "2012-08-07 to 2026-08-25",
     "completeness_pressure_pct": 99.4,
     "completeness_temperature_pct": 99.4,
-    "schema_check": "PASS (Strict Pydantic / Typed Columns)",
-    "range_check": "PASS (Martian Physical Bounds: -130\u00b0C to +30\u00b0C, 600-1150 Pa)",
-    "duplicate_check": "PASS (Unique Sol IDs validated)",
-    "gap_detection": "Detected 4 significant sensor gap intervals during Curiosity drill operations & solar conjunctions"
+    "completeness_solar_longitude_pct": 100.0,
+    "duplicate_sols_count": 0,
+    "invalid_dates_count": 0,
+    "range_check_failures_count": 0,
+    "schema_check": "PASS (Strictly Typed Schema)",
+    "range_check": "PASS (0 out-of-bounds violations)",
+    "gap_detection": "Detected 4 known operational gap intervals (drill campaigns, solar conjunctions)",
+    "assessment": "SUITABLE_FOR_RESEARCH"
   },
   "insight_apss": {
-    "total_observations": 57,
+    "dataset_name": "InSight TWINS / APSS Surface Meteorology Baseline",
+    "provenance_status": "SYNTHETIC_DEMONSTRATION",
+    "is_synthetic": true,
+    "data_provenance": "DEMONSTRATION DATA",
+    "data_origin": "simulated",
+    "total_source_records": 50,
+    "synthetic_records_count": 50,
+    "observed_records_count": 0,
     "sol_range": "Sol 10 to Sol 745",
-    "schema_check": "PASS",
-    "range_check": "PASS",
-    "completeness_pct": 94.8,
-    "gap_detection": "Dust event sleep modes detected in late mission sols"
+    "observation_dates": "2018-12-06 to 2020-12-30",
+    "completeness_pressure_pct": 100.0,
+    "completeness_temperature_pct": 100.0,
+    "completeness_wind_pct": 100.0,
+    "duplicate_sols_count": 0,
+    "invalid_dates_count": 0,
+    "schema_check": "PASS (Strictly Typed Schema, astronomical UTC derivation)",
+    "range_check": "PASS (All records within verified Martian physics)",
+    "assessment": "DEMONSTRATION_CALIBRATED"
   },
   "mro_mcs": {
+    "dataset_name": "MRO Mars Climate Sounder (MCS) Atmospheric Profiles",
+    "provenance_status": "SYNTHETIC_DEMONSTRATION",
+    "is_synthetic": true,
+    "data_provenance": "DEMONSTRATION DATA",
+    "data_origin": "simulated",
     "profiles_count": 4,
-    "vertical_layers": 25,
+    "total_layers": 100,
+    "layers_with_uncertainty": 100,
+    "uncertainty_coverage_pct": 100.0,
     "altitude_range_km": "0.0 to 80.0 km",
-    "uncertainty_status": "PASS (Per-layer 1-sigma uncertainty verified)",
-    "completeness_pct": 98.2
-  }
+    "schema_check": "PASS (PDS3 DDR Compliant Structure)",
+    "uncertainty_status": "PASS (Explicit 1-sigma uncertainty bands present per level)",
+    "assessment": "PARAMETERIZED_SOUNDING_DEMONSTRATION"
+  },
+  "generated_at_utc": "2026-10-19T22:06:33.062412+00:00"
 }

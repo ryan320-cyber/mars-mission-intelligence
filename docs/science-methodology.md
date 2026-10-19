@@ -67,9 +67,55 @@ Classification tiers:
 ---
 
 ## 5. Machine Learning Validation & Explainability
+
+### Chronological Protocol
 - **Chronological Split**: Train (first 70%), Validation (next 15%), Test (final 15%).
-- **Baselines**:
-  - Persistence: $\hat{y}_t = y_{t-1}$
-  - Rolling 7-Sol Mean: $\hat{y}_t = \frac{1}{7} \sum_{i=1}^7 y_{t-i}$
-- **ML Models**: Ridge Regression ($\alpha=10.0$) and Random Forest Regressor ($n=100$, $\text{max\_depth}=6$).
-- **Explainability**: Permutation feature importances and slice-based seasonal error breakdowns.
+- **Zero Lookahead**: StandardScaler fit exclusively on training partition; applied forward to validation and test.
+- **Dataset**: 4,745 continuous Curiosity REMS Sols (verified NASA observations only).
+
+### Baselines
+- Persistence: $\hat{y}_t = y_{t-1}$
+- Rolling 7-Sol Mean: $\hat{y}_t = \frac{1}{7} \sum_{i=1}^7 y_{t-i}$
+
+### ML Models
+- Ridge Regression ($\alpha$ tuned on validation set from candidates $\{0.1, 1.0, 10.0, 50.0, 100.0\}$)
+- Random Forest Regressor ($n=100$, $\text{max\_depth}=6$, `random_state=42`)
+
+### Reproduced Evaluation Results (Out-of-Sample Test Set)
+| Model | MAE (°C) | RMSE (°C) | R² | Samples |
+|---|---|---|---|---|
+| Naive Persistence | 4.53 | 8.87 | 0.069 | ~712 |
+| Rolling 7-Sol Mean | 3.95 | 6.92 | 0.433 | ~712 |
+| Ridge Regression | 3.87 | 7.00 | 0.420 | ~712 |
+| **Random Forest** | **3.72** | **6.92** | **0.433** | ~712 |
+
+> **Historical Note:** Legacy documentation claimed MAE = 2.84°C and R² = 0.814. These values
+> could not be reproduced under the current chronological 70/15/15 partitioning with zero lookahead
+> bias on verified data. They have been superseded by the above independently reproduced results.
+
+### Honest Failure Case
+During the Martian dust storm season ($L_s \in [180^\circ, 270^\circ]$), sudden atmospheric opacity
+surges cause abrupt non-linear diurnal thermal amplitude collapses. The Random Forest experiences
+errors exceeding 14°C during these events because autoregressive lag features (t-1, t-2) assume
+short-term persistence that is violated by rapid radiative regime changes.
+
+### Feature Importances
+Ranked by Random Forest impurity decrease:
+1. Prior Sol Amplitude (t-1) — dominant predictor
+2. 2-Sol Prior Amplitude (t-2)
+3. Rolling 7-Sol Mean Amplitude
+4. Surface Pressure (t-1) and Pressure Rate of Change
+5. Solar Longitude cyclical encoding (sin/cos $L_s$)
+
+### Explainability
+Permutation feature importances and slice-based seasonal error breakdowns are computed
+dynamically on each evaluation run and displayed in the ML Model Lab module.
+
+---
+
+## 6. InSight Sol-to-UTC Epoch Derivation
+InSight Sol dates are converted to UTC using the documented landing epoch:
+$$\text{UTC}(\text{sol}) = \text{2018-11-26T00:00:00Z} + \text{sol} \times 88{,}775.244\text{ s}$$
+where 88,775.244 seconds is the duration of one Martian solar day (sol).
+This method replaces the previously invalid generated dates (e.g., month 13) with astronomically
+correct UTC timestamps.

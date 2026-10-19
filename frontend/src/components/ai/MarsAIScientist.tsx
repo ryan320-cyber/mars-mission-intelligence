@@ -66,11 +66,21 @@ export const MarsAIScientist: React.FC<MarsAIScientistProps> = ({ onNavigate }) 
           </p>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs text-slate-400">
+        <div className="flex items-center gap-2 font-mono text-xs text-slate-400 flex-wrap">
           <span className="px-2.5 py-1 rounded bg-mars-surface border border-mars-border text-mars-cyan flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             <span>Anti-Hallucination Guardrails Active</span>
           </span>
+          {response?.model_provider_status && (
+            <span className={`px-2.5 py-1 rounded border flex items-center gap-1.5 ${
+              response.model_provider_status.includes("GEMINI")
+                ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-400"
+                : "bg-amber-500/10 border-amber-500/40 text-amber-400"
+            }`}>
+              <Bot className="w-3.5 h-3.5" />
+              <span>{response.model_provider_status.includes("GEMINI") ? "Gemini LLM Active" : "Deterministic Assistant"}</span>
+            </span>
+          )}
         </div>
       </div>
 
@@ -182,6 +192,30 @@ export const MarsAIScientist: React.FC<MarsAIScientistProps> = ({ onNavigate }) 
               {response.analytical_interpretation}
             </p>
           </div>
+
+          {/* 3b. UNCERTAINTY QUANTIFICATION */}
+          {response.uncertainty && (
+            <div className="p-3 bg-mars-surface/30 rounded-lg border border-mars-border/60 text-xs space-y-1">
+              <span className="text-[10px] font-mono text-mars-amber font-bold block uppercase tracking-wider">
+                03b — UNCERTAINTY QUANTIFICATION
+              </span>
+              <p className="text-slate-400 font-sans text-[11px] leading-relaxed">
+                {response.uncertainty}
+              </p>
+            </div>
+          )}
+
+          {/* 3c. ANALYTICAL METHODS */}
+          {response.methods && (
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">
+                03c — ANALYTICAL METHODS
+              </span>
+              <p className="text-[11px] text-slate-400 font-mono leading-relaxed">
+                {response.methods}
+              </p>
+            </div>
+          )}
 
           {/* 4. LIMITATIONS & FALSE CERTAINTY CHECK (Directive 40) */}
           <div className="p-3 bg-mars-surface/50 rounded-lg border border-mars-border text-xs space-y-1">

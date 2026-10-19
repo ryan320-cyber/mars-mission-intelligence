@@ -68,3 +68,25 @@
   - `water_ice_extinction_km_inv`: Inverse kilometers (km⁻¹), MCS 12 μm channel
 - **Sensor Limitations**:
   - Near-surface layers (< 5 km) obscured during intense planet-encircling dust storms (PEDS).
+
+---
+
+## Data Provenance Transparency
+
+> **Critical Scientific Integrity Notice**: The following table documents the actual verification
+> status of each dataset as loaded in the application. Demonstration data must never be
+> mistaken for authentic NASA observations.
+
+| Dataset | Source Type | Verification Status | `is_synthetic` | Notes |
+|---|---|---|---|---|
+| Curiosity REMS | NASA Mars Weather API | **VERIFIED_AUTHORITATIVE** | `false` | 4,745 daily Sol records retrieved from `mars.nasa.gov/rss/api`, authenticated via PDS DOI 10.17189/1519504 |
+| InSight TWINS/APSS | Simulated Reference Series | DEMONSTRATION_DATA | `true` | Sol dates derived from InSight landing epoch (2018-11-26 UTC) using Martian sol length (88,775.244 s). Atmospheric values are physically plausible reference profiles, not PDS downloads. |
+| MRO MCS Profiles | Simulated Atmospheric Model | DEMONSTRATION_DATA | `true` | Hydrostatic scale-height reference profiles with uncertainty envelopes. Structurally consistent with PDS DDR products but not sourced from actual orbital limb scans. |
+
+### InSight UTC Derivation Method
+InSight Sol dates are computed from the documented landing epoch:
+- Sol 0 = 2018-11-26T00:00:00Z (InSight landing date)
+- Each Sol = 88,775.244 seconds (1 Martian solar day)
+- Formula: `UTC(sol) = epoch + sol × 88775.244 seconds`
+
+This eliminates the previously invalid date `2019-13-18` (month 13) which appeared in raw generated data.

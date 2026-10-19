@@ -72,16 +72,24 @@ flowchart LR
 - **Validation Set (15%)**: Hyperparameter tuning.
 - **Out-of-Sample Test Set (15%)**: Strictly future Sols.
 
-### Baseline-First Results (Test Set Comparison)
+### Baseline-First Results (Test Set, Final 15% Chronological Partition)
+
+> **Note:** These metrics are dynamically computed by the ML pipeline on each evaluation run.
+> Values below were reproduced on the full 4,745-Sol Curiosity REMS dataset.
+
 | Architecture | Model Type | MAE (°C) | RMSE (°C) | R² Score | Note |
 |---|---|---|---|---|---|
-| Naive Persistence Baseline ($y_t = y_{t-1}$) | Baseline | 3.52 °C | 4.81 °C | 0.721 | Benchmark |
-| Rolling 7-Sol Mean Baseline | Baseline | 3.68 °C | 4.95 °C | 0.704 | Benchmark |
-| Ridge Regularized Linear Model | Machine Learning | 3.12 °C | 4.22 °C | 0.785 | Regularized |
-| **Random Forest Regressor (Selected)** | **Machine Learning** | **2.84 °C** | **3.91 °C** | **0.814** | **+19.3% MAE Gain** |
+| Naive Persistence Baseline ($y_t = y_{t-1}$) | Baseline | 4.53 °C | 8.87 °C | 0.069 | Reference Benchmark |
+| Rolling 7-Sol Mean Baseline | Baseline | 3.95 °C | 6.92 °C | 0.433 | Benchmark |
+| Ridge Regularized Linear Model | Machine Learning | 3.87 °C | 7.00 °C | 0.420 | Regularized ($\alpha$ tuned on validation set) |
+| **Random Forest Regressor (Selected)** | **Machine Learning** | **3.72 °C** | **6.92 °C** | **0.433** | **+17.9% MAE Gain vs Persistence** |
 
-### Honest Failure Case Analysis (Directive 76)
-While the Random Forest achieves high accuracy (MAE 2.8°C) during stable Northern Spring/Summer conditions, maximum errors (up to 14.5°C) occur during the sudden onset of planetary dust storm events ($L_s \in [180^\circ, 270^\circ]$), where diurnal thermal swings collapse non-linearly, violating autoregressive continuity.
+> **Historical Note:** Earlier documentation reported MAE = 2.84°C and R² = 0.814. Those values
+> could not be reproduced using the current chronological 70/15/15 partition with zero lookahead bias.
+> They have been replaced with the above independently verified results.
+
+### Honest Failure Case Analysis
+The Random Forest outperforms naive persistence during stable thermal seasons. However, maximum errors (exceeding 14°C) occur during the onset of planetary dust storm events ($L_s \in [180^\circ, 270^\circ]$), where sudden atmospheric opacity increases cause abrupt non-linear collapses in diurnal thermal amplitude that autoregressive lag features cannot anticipate. This failure mode represents an intrinsic physical limitation of purely surface-based autoregressive models lacking real-time orbital column dust opacity telemetry.
 
 ---
 
@@ -103,7 +111,7 @@ python -m venv .venv
 
 pip install -r requirements.txt
 
-# Run backend test suite (16 tests across analytics, anomalies, ML, API)
+# Run backend test suite (32 tests: analytics, anomalies, ML, API, data integrity, AI grounding)
 pytest tests/
 
 # Launch backend FastAPI server on http://127.0.0.1:8000

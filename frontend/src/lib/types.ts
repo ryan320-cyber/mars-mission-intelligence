@@ -41,6 +41,9 @@ export interface ObservationRecord {
   mission: string;
   site: string;
   data_source: string;
+  data_origin?: string;
+  is_synthetic?: boolean;
+  data_provenance?: string;
 }
 
 export interface SensorGap {
@@ -190,10 +193,18 @@ export interface EvidenceLink {
 
 export interface AIResponse {
   finding: string;
+  answer?: string;
   data_evidence: string;
+  evidence?: string;
   analytical_interpretation: string;
   limitations: string;
+  uncertainty?: string;
   source: string;
+  sources?: string;
+  data_status?: string;
+  methods?: string;
+  computed_at?: string;
+  model_provider_status?: string;
   evidence_links: EvidenceLink[];
   data_sufficiency: "HIGH" | "MODERATE" | "LOW" | "INSUFFICIENT";
 }

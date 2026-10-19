@@ -218,21 +218,24 @@ def run_model_experiment(records: List[Dict[str, Any]]) -> Dict[str, Any]:
                 "mae": round(base_mae, 2),
                 "rmse": round(base_rmse, 2),
                 "r2": round(base_r2, 3),
-                "type": "Baseline"
+                "type": "Baseline",
+                "data_origin": "derived"
             },
             {
                 "model_name": "Rolling 7-Sol Mean Baseline",
                 "mae": round(roll_mae, 2),
                 "rmse": round(roll_rmse, 2),
                 "r2": round(roll_r2, 3),
-                "type": "Baseline"
+                "type": "Baseline",
+                "data_origin": "derived"
             },
             {
                 "model_name": "Ridge Regularized Linear Model",
                 "mae": round(ridge_mae, 2),
                 "rmse": round(ridge_rmse, 2),
                 "r2": round(ridge_r2, 3),
-                "type": "Machine Learning"
+                "type": "Machine Learning",
+                "data_origin": "predicted"
             },
             {
                 "model_name": "Random Forest Regressor (Selected Model)",
@@ -240,20 +243,41 @@ def run_model_experiment(records: List[Dict[str, Any]]) -> Dict[str, Any]:
                 "rmse": round(rf_rmse, 2),
                 "r2": round(rf_r2, 3),
                 "type": "Machine Learning",
-                "improvement_over_baseline_pct": round(((base_mae - rf_mae) / base_mae) * 100, 1)
+                "improvement_over_baseline_pct": round(((base_mae - rf_mae) / base_mae) * 100, 1),
+                "data_origin": "predicted"
             }
         ],
         "feature_importances": importances,
         "slice_error_analysis": {
             "seasonal_slices": season_slices,
             "failure_case_analysis": (
-                "The Random Forest model achieves high accuracy (MAE ~2.8°C) during stable conditions. "
-                "However, maximum errors (up to 14.5°C) occur during the onset of planetary dust storm events (Ls 180°-270°), "
+                "The Random Forest model achieves strong relative performance over naive persistence during stable conditions. "
+                "However, maximum errors (exceeding 14°C) occur during the onset of planetary dust storm events (Ls 180°-270°), "
                 "where sudden atmospheric opacity increases cause abrupt non-linear collapses in radiative thermal amplitude that lag features cannot anticipate."
             ),
+            "honest_failure_case": {
+                "season_name": "Martian Dust Storm Season / Perihelion",
+                "ls_range": "180° - 270°",
+                "test_sample_count": int(len(dust_season_df)),
+                "mae": round(float(dust_season_df["abs_error"].mean()), 2) if len(dust_season_df) > 0 else 0.0,
+                "max_error_c": round(float(dust_season_df["abs_error"].max()), 2) if len(dust_season_df) > 0 else 0.0,
+                "extreme_error_threshold_c": 14.0,
+                "extreme_error_count": int(len(extreme_dust_errors)),
+                "extreme_error_sols": [int(s) for s in extreme_dust_errors["sol"].tolist()[:10]],
+                "data_origin": "derived",
+                "scientific_explanation": (
+                    "During Solar Longitude Ls 180°-270° (Martian perihelion and global dust storm season), "
+                    "rapid atmospheric aerosol optical depth increases cause abrupt radiative thermal collapse. "
+                    "The diurnal thermal amplitude drops precipitously within 24-48 hours. Because autoregressive "
+                    "lag features (t-1, t-2) assume short-term persistence, the model experiences extreme non-linear "
+                    "prediction errors (> 14°C). This failure mode represents an intrinsic physical limitation of "
+                    "purely autoregressive surface models lacking orbital atmospheric column dust opacity telemetry."
+                )
+            },
             "dust_storm_failure_cases": failure_case_records,
             "dust_season_sample_count": len(dust_season_df),
-            "dust_season_extreme_error_count": len(extreme_dust_errors)
+            "dust_season_extreme_error_count": len(extreme_dust_errors),
+            "data_origin": "derived"
         },
         "test_predictions_sample": test_curve
     }

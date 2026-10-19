@@ -1,59 +1,142 @@
 """
-Singleton Data Loader with LRU caching for authoritative NASA Planetary Data System datasets.
-Prevents repeated disk reads and ensures clear boundary isolation between authentic NASA observations
-and synthetic / demonstration data.
+Singleton Data Loader with thread-safe in-memory caching for NASA datasets.
+Eliminates redundant disk reads and enforces strict isolation boundaries
+between authentic NASA observations and synthetic / demonstration data.
 """
 
 from functools import lru_cache
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import copy
 import logging
 
 from app.data.ingestion import ingestion_engine
+from app.analytics.anomaly import detect_multivariate_anomalies, detect_univariate_anomalies
+from app.analytics.time_series import downsample_vertical_profiles
 
 logger = logging.getLogger(__name__)
 
-class DataLoaderSingleton:
+class DataLoader:
     """Thread-safe cached data loader for Curiosity, InSight, and MRO MCS."""
 
     def __init__(self):
-        self._curiosity_cache: List[Dict[str, Any]] = []
-        self._insight_cache: List[Dict[str, Any]] = []
-        self._mcs_cache: List[Dict[str, Any]] = []
-        self._is_warmed: bool = False
+        self._curiosity_records: List[Dict[str, Any]] = []
+        self._insight_records: List[Dict[str, Any]] = []
+        self._mcs_profiles: List[Dict[str, Any]] = []
+        self._quality_scorecard: Optional[Dict[str, Any]] = None
+        self._curiosity_sol_index: Dict[int, Dict[str, Any]] = {}
+        self._multivariate_anomalies: Optional[List[Dict[str, Any]]] = None
+        self._univariate_anomaly_cache: Dict[str, List[Dict[str, Any]]] = {}
+        self._ml_experiment_cache: Optional[Dict[str, Any]] = None
+        self._is_preloaded: bool = False
 
-    def warm_cache(self) -> None:
-        """Preloads datasets into in-memory cache during application lifespan startup."""
-        logger.info("Warming PDS dataset caches...")
-        self._curiosity_cache = ingestion_engine.ingest_curiosity_rems()
-        self._insight_cache = ingestion_engine.ingest_insight_meteorology()
-        self._mcs_cache = ingestion_engine.ingest_mcs_profiles()
-        self._is_warmed = True
+    def preload_all(self) -> None:
+        """Preloads datasets into in-memory cache and builds fast O(1) indices."""
+        logger.info("DataLoader: Preloading NASA Planetary Datasets into memory...")
+        self._curiosity_records = ingestion_engine.ingest_curiosity_rems()
+        self._insight_records = ingestion_engine.ingest_insight_meteorology()
+        self._mcs_profiles = ingestion_engine.ingest_mcs_profiles()
+        self._quality_scorecard = ingestion_engine.generate_quality_scorecard()
+
+        # Build fast O(1) Sol index map
+        self._curiosity_sol_index = {
+            int(r["sol"]): r for r in self._curiosity_records if r.get("sol") is not None
+        }
+
+        # Pre-compute multivariate anomalies
+        logger.info("DataLoader: Pre-computing multivariate anomalies...")
+        self._multivariate_anomalies = detect_multivariate_anomalies(self._curiosity_records)
+
+        # Pre-compute common univariate anomalies
+        for var in ["air_temp_max_c", "air_temp_min_c", "temp_amplitude_c", "pressure_pa"]:
+            self._univariate_anomaly_cache[var] = detect_univariate_anomalies(
+                self._curiosity_records, variable=var, threshold=3.0
+            )
+
+        self._is_preloaded = True
         logger.info(
-            f"Cache warmed successfully: {len(self._curiosity_cache)} Curiosity Sols, "
-            f"{len(self._insight_cache)} InSight Sols, {len(self._mcs_cache)} MRO MCS profiles."
+            f"DataLoader: Preload complete. {len(self._curiosity_records)} Curiosity Sols, "
+            f"{len(self._insight_records)} InSight Sols, {len(self._mcs_profiles)} MCS profiles cached."
         )
 
+    def warm_cache(self) -> None:
+        """Alias for preload_all for backward compatibility."""
+        self.preload_all()
+
     def get_curiosity_records(self) -> List[Dict[str, Any]]:
-        """Returns verified Curiosity REMS observational records."""
-        if not self._is_warmed or not self._curiosity_cache:
-            self._curiosity_cache = ingestion_engine.ingest_curiosity_rems()
-        return self._curiosity_cache
+        """Returns in-memory Curiosity records (tag: observed / NASA_AUTHORITATIVE)."""
+        if not self._is_preloaded or not self._curiosity_records:
+            self.preload_all()
+        return self._curiosity_records
 
     def get_insight_records(self) -> List[Dict[str, Any]]:
-        """Returns verified InSight TWINS observational records."""
-        if not self._is_warmed or not self._insight_cache:
-            self._insight_cache = ingestion_engine.ingest_insight_meteorology()
-        return self._insight_cache
+        """Returns in-memory InSight records (tag: observed or simulated demo baseline)."""
+        if not self._is_preloaded or not self._insight_records:
+            self.preload_all()
+        return self._insight_records
 
-    def get_mcs_profiles(self) -> List[Dict[str, Any]]:
-        """Returns verified MRO Mars Climate Sounder vertical sounding profiles."""
-        if not self._is_warmed or not self._mcs_cache:
-            self._mcs_cache = ingestion_engine.ingest_mcs_profiles()
-        return self._mcs_cache
+    def get_mcs_profiles(self, downsample: bool = False, target_levels: int = 15) -> List[Dict[str, Any]]:
+        """Returns MRO MCS vertical sounding profiles (full 25 levels by default)."""
+        if not self._is_preloaded or not self._mcs_profiles:
+            self.preload_all()
+        if downsample:
+            return downsample_vertical_profiles(self._mcs_profiles, target_levels=target_levels)
+        return self._mcs_profiles
+
+    def get_scorecard(self) -> Dict[str, Any]:
+        """Returns dynamically computed data quality scorecard."""
+        if not self._is_preloaded or not self._quality_scorecard:
+            self.preload_all()
+        return self._quality_scorecard
+
+    def get_sol_record(self, sol: int) -> Optional[Dict[str, Any]]:
+        """O(1) dictionary retrieval of Curiosity observation for a specific Sol."""
+        if not self._is_preloaded:
+            self.preload_all()
+        return self._curiosity_sol_index.get(sol)
+
+    def get_sol_index(self) -> Dict[int, Dict[str, Any]]:
+        """Returns full Sol index map."""
+        if not self._is_preloaded:
+            self.preload_all()
+        return self._curiosity_sol_index
+
+    def get_multivariate_anomalies(self) -> List[Dict[str, Any]]:
+        """Returns pre-computed multivariate anomalies."""
+        if not self._is_preloaded or not self._multivariate_anomalies:
+            self.preload_all()
+        return self._multivariate_anomalies
+
+    def get_univariate_anomalies(self, variable: str = "air_temp_max_c", threshold: float = 3.0) -> List[Dict[str, Any]]:
+        """Returns pre-computed or dynamically computed univariate anomalies."""
+        if not self._is_preloaded:
+            self.preload_all()
+        if variable in self._univariate_anomaly_cache and threshold == 3.0:
+            return self._univariate_anomaly_cache[variable]
+        return detect_univariate_anomalies(self._curiosity_records, variable=variable, threshold=threshold)
+
+    def get_ml_experiment(self) -> Optional[Dict[str, Any]]:
+        """Returns cached ML experiment result."""
+        return self._ml_experiment_cache
+
+    def set_ml_experiment(self, exp: Dict[str, Any]) -> None:
+        """Sets cached ML experiment."""
+        self._ml_experiment_cache = exp
+
+    # --- Strict Isolation Boundary for DEMONSTRATION DATA ---
+    def get_demo_scenario_data(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Produces simulation payloads strictly isolated from real telemetry caches.
+        Payload is immutably tagged DEMONSTRATION DATA and simulated.
+        """
+        return {
+            "data_provenance": "DEMONSTRATION DATA",
+            "data_origin": "simulated",
+            "is_simulation": True,
+            "simulation_parameters": params
+        }
 
 # Global singleton instance
-data_loader = DataLoaderSingleton()
+data_loader = DataLoader()
 
 @lru_cache(maxsize=32)
 def get_cached_curiosity_tuple():
