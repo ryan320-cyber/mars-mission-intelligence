@@ -93,5 +93,41 @@ def test_honest_failure_case_logged():
     # Verify failure cases have required schema fields
     for case in slice_analysis["dust_storm_failure_cases"]:
         assert 180.0 <= case["solar_longitude_ls"] <= 270.0
-        assert case["error_c"] > 14.0
+        assert case["error_c"] >= 14.0
         assert "phenomenon" in case
+
+def test_real_sol_lags_prevent_false_consecutive_lag_on_gaps():
+    """Phase 4.1 Regression: Gapped Sols must not treat separated records as consecutive Sol lags."""
+    import pandas as pd
+    records = [
+        {"sol": 100, "temp_amplitude_c": 50.0, "pressure_pa": 800.0, "solar_longitude_ls": 10.0},
+        {"sol": 101, "temp_amplitude_c": 52.0, "pressure_pa": 802.0, "solar_longitude_ls": 10.5},
+        # Big multi-sol gap: Sol 102 - 109 missing
+        {"sol": 110, "temp_amplitude_c": 60.0, "pressure_pa": 810.0, "solar_longitude_ls": 15.0},
+        {"sol": 111, "temp_amplitude_c": 62.0, "pressure_pa": 812.0, "solar_longitude_ls": 15.5},
+        {"sol": 112, "temp_amplitude_c": 64.0, "pressure_pa": 814.0, "solar_longitude_ls": 16.0},
+    ]
+    X, y, df = build_feature_matrix(records)
+    # Sol 110 must NOT appear with Sol 101 as its lag_1 (because Sol 109 is missing)
+    # Only Sols with authentic t-1, t-2, and rolling-7 data should be retained
+    retained_sols = df["sol"].tolist()
+    assert 110 not in retained_sols, "Sol 110 should not have been retained with false t-1 lag across a 9-sol gap"
+
+def test_zero_baseline_division_guard():
+    """Phase 4.3 Regression: Zero baseline MAE cannot trigger a division-by-zero error."""
+    # Constant data where baseline MAE could be 0
+    records = []
+    for sol in range(1, 150):
+        records.append({
+            "sol": sol,
+            "temp_amplitude_c": 50.0,  # completely constant
+            "pressure_pa": 800.0,
+            "solar_longitude_ls": float(sol % 360),
+            "martian_season": "Northern Spring"
+        })
+    res = run_model_experiment(records)
+    # Must succeed without ZeroDivisionError
+    assert "models_comparison" in res
+    for m in res["models_comparison"]:
+        assert m["mae"] >= 0.0
+

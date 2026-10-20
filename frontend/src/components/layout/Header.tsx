@@ -73,8 +73,22 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-emerald-400 font-bold">{systemStatus}</span>
+            <span
+              className={`w-2 h-2 rounded-full ${
+                systemStatus.includes("OFFLINE") || systemStatus.includes("DISCONNECTED") || systemStatus.includes("STANDALONE")
+                  ? "bg-amber-400"
+                  : "bg-emerald-400 animate-ping"
+              }`}
+            />
+            <span
+              className={`font-bold ${
+                systemStatus.includes("OFFLINE") || systemStatus.includes("DISCONNECTED") || systemStatus.includes("STANDALONE")
+                  ? "text-amber-400"
+                  : "text-emerald-400"
+              }`}
+            >
+              {systemStatus}
+            </span>
           </div>
           <span className="text-slate-400">{utcTime}</span>
           <button

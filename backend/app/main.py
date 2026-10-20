@@ -94,11 +94,22 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Root Health / Ping Check
 @app.get("/health")
 def health_check():
+    ready = data_loader.is_ready()
+    cache_meta = data_loader.get_cache_metadata()
     return {
-        "status": "HEALTHY",
+        "status": "HEALTHY" if ready else "DEGRADED",
+        "liveness": True,
+        "readiness": ready,
         "service": PROJECT_NAME,
         "version": VERSION,
-        "authoritative_data": "CONNECTED"
+        "authoritative_data": "CONNECTED" if ready else "DISCONNECTED",
+        "data_readiness": "LOADED" if ready else "NOT_LOADED",
+        "cache": cache_meta,
+        "provenance_summary": {
+            "curiosity_rems": "OBSERVED_VERIFIED_PDS" if cache_meta.get("curiosity_count", 0) > 0 else "UNAVAILABLE",
+            "insight_twins": "CALIBRATED_SIMULATION_BASELINE" if cache_meta.get("insight_count", 0) > 0 else "UNAVAILABLE",
+            "mro_mcs": "PARAMETERIZED_REFERENCE_MODEL" if cache_meta.get("mcs_count", 0) > 0 else "UNAVAILABLE"
+        }
     }
 
 # Mount API routes

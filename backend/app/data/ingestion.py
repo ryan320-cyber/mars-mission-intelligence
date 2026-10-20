@@ -121,7 +121,7 @@ class DataIngestionEngine:
                 with open(self.curiosity_cache_file, "r", encoding="utf-8") as f:
                     records = json.load(f)
                     if records:
-                        return self._validate_and_tag_curiosity(records)
+                        return self._validate_and_tag_curiosity(records, is_source_verified=True)
             except Exception as e:
                 logger.error(f"Error loading Curiosity cache: {e}")
 
@@ -141,19 +141,19 @@ class DataIngestionEngine:
 
         if self.curiosity_cache_file.exists():
             with open(self.curiosity_cache_file, "r", encoding="utf-8") as f:
-                return self._validate_and_tag_curiosity(json.load(f))
+                return self._validate_and_tag_curiosity(json.load(f), is_source_verified=True)
 
         return []
 
-    def _validate_and_tag_curiosity(self, records: List[Dict[str, Any]], is_source_verified: bool = True) -> List[Dict[str, Any]]:
+    def _validate_and_tag_curiosity(self, records: List[Dict[str, Any]], is_source_verified: bool = False) -> List[Dict[str, Any]]:
         """
         Validates structural date/format and assigns multidimensional provenance tags.
         
-        CRITICAL FIX (Phase 3.1): Date validation confirms only calendar validity.
-        Date validation NEVER confers source authenticity.
-        Origin authenticity is independently verified against authoritative
-        PDS archive dataset metadata (MSL-M-REMS-MOD-5-V1.0).
-        If origin cannot be verified, records are tagged UNVERIFIED_SOURCE.
+        CRITICAL SCIENTIFIC INTEGRITY FIX:
+        - Date validation confirms only calendar validity.
+        - Provenance authenticity is NEVER inferred from self-declared record fields (e.g. "REMS" or "MSL").
+        - Origin authenticity is strictly derived from the trusted ingestion channel (is_source_verified).
+        - If origin cannot be verified, records are tagged UNVERIFIED_SOURCE.
         """
         valid_records = []
         for r in records:
@@ -168,12 +168,8 @@ class DataIngestionEngine:
                 })
                 continue
             
-            # 2. Source Authenticity Verification (Independent from date validation)
-            data_src = str(r.get("data_source", ""))
-            dataset_id = str(r.get("dataset_id", ""))
-            has_pds_origin = is_source_verified and (
-                "REMS" in data_src or dataset_id == "MSL-M-REMS-MOD-5-V1.0" or "MSL" in data_src
-            )
+            # 2. Source Authenticity Verification (Independent from date validation and self-declared strings)
+            has_pds_origin = bool(is_source_verified)
             
             # 3. Physical Plausibility Checks
             press = r.get("pressure_pa")
@@ -263,8 +259,9 @@ class DataIngestionEngine:
                 mean_air_temp = round((max_t + min_t) / 2.0, 2) if (max_t is not None and min_t is not None) else None
 
                 season_name = self._solar_longitude_to_season(ls_val)
-                opacity = s.get("atmo_opacity") if s.get("atmo_opacity") and s.get("atmo_opacity") != "--" else "Sunny"
-                uv_index = s.get("local_uv_irradiance_index") if s.get("local_uv_irradiance_index") and s.get("local_uv_irradiance_index") != "--" else "Moderate"
+                opacity = s.get("atmo_opacity") if s.get("atmo_opacity") and s.get("atmo_opacity") != "--" else None
+                uv_index = s.get("local_uv_irradiance_index") if s.get("local_uv_irradiance_index") and s.get("local_uv_irradiance_index") != "--" else None
+                press_str = s.get("pressure_string") if s.get("pressure_string") and s.get("pressure_string") != "--" else None
 
                 record = {
                     "sol": sol_num,
@@ -278,8 +275,9 @@ class DataIngestionEngine:
                     "ground_temp_min_c": min_gts,
                     "ground_temp_max_c": max_gts,
                     "pressure_pa": press_val,
-                    "pressure_string": s.get("pressure_string", "Stable"),
+                    "pressure_string": press_str,
                     "atmospheric_opacity": opacity,
+                    "wind_speed_ms": None,
                     "uv_index": uv_index,
                     "sunrise": s.get("sunrise", ""),
                     "sunset": s.get("sunset", ""),
@@ -585,8 +583,11 @@ class DataIngestionEngine:
         curio_sols = [r["sol"] for r in curiosity_data if "sol" in r]
         curio_duplicates = curio_total - len(set(curio_sols))
 
-        # Date validation check
+        # Date validation check on retained records
         curio_invalid_dates = sum(1 for r in curiosity_data if not self.validate_date(r.get("terrestrial_date"))[0])
+
+        curio_rejected = len(self._quarantined_records)
+        curio_evaluated = curio_total + curio_rejected
 
         # Range check failures: physically impossible values outside -135°C..+35°C or 500..1250 Pa
         curio_range_failures = 0
@@ -600,6 +601,13 @@ class DataIngestionEngine:
                 curio_range_failures += 1
             if t_min is not None and not (-135.0 <= t_min <= 35.0):
                 curio_range_failures += 1
+
+        mandatory_keys = {"sol", "terrestrial_date"}
+        curio_schema_pass = (
+            all(mandatory_keys.issubset(r.keys()) for r in curiosity_data) if curio_total else False
+        )
+        curio_schema_str = "PASS (Strictly Typed Schema)" if curio_schema_pass else "FAIL (Missing mandatory fields)"
+        curio_assessment = "SUITABLE_FOR_RESEARCH" if (curio_range_failures == 0 and curio_duplicates == 0 and curio_schema_pass and curio_total > 0) else "CAUTION_FLAGGED_DATA"
 
         # 2. InSight Quality Metrics
         insight_total = len(insight_data)
@@ -626,8 +634,10 @@ class DataIngestionEngine:
                 "is_synthetic": False,
                 "data_origin": "observed",
                 "total_source_records": curio_total,
+                "total_evaluated_records": curio_evaluated,
+                "retained_records_count": curio_total,
+                "rejected_records_count": curio_rejected,
                 "valid_records_count": curio_total - curio_invalid_dates,
-                "rejected_records_count": len(self._quarantined_records),
                 "sol_range": f"Sol {curiosity_data[0]['sol']} to Sol {curiosity_data[-1]['sol']}" if curio_total else "N/A",
                 "observation_dates": f"{curiosity_data[0]['terrestrial_date']} to {curiosity_data[-1]['terrestrial_date']}" if curio_total else "N/A",
                 "completeness_pressure_pct": round((curio_press_valid / curio_total) * 100, 1) if curio_total else 0.0,
@@ -636,10 +646,10 @@ class DataIngestionEngine:
                 "duplicate_sols_count": curio_duplicates,
                 "invalid_dates_count": curio_invalid_dates,
                 "range_check_failures_count": curio_range_failures,
-                "schema_check": "PASS (Strictly Typed Schema)",
-                "range_check": f"PASS ({curio_range_failures} out-of-bounds violations)",
+                "schema_check": curio_schema_str,
+                "range_check": f"PASS ({curio_range_failures} out-of-bounds violations)" if curio_range_failures == 0 else f"FLAGGED ({curio_range_failures} violations)",
                 "gap_detection": "Detected 4 known operational gap intervals (drill campaigns, solar conjunctions)",
-                "assessment": "SUITABLE_FOR_RESEARCH"
+                "assessment": curio_assessment
             },
             "insight_apss": {
                 "dataset_name": "InSight TWINS / APSS Surface Meteorology Baseline",

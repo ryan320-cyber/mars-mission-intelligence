@@ -27,35 +27,52 @@ def build_feature_matrix(records: List[Dict[str, Any]]) -> Tuple[pd.DataFrame, p
       - cos_ls (cos(2*pi*Ls / 360))
     Target at Sol t:
       - temp_amplitude_c (diurnal thermal swing at Sol t)
+
+    CRITICAL ML INTEGRITY:
+    Uses Sol-based integer reindexing to ensure that lag1 is strictly Sol t - 1
+    and lag2 is strictly Sol t - 2. Gaps in Martian Sols produce NaN lags rather
+    than false consecutive-row leakage across gap intervals.
     """
     df = pd.DataFrame(records)
     needed = ["sol", "air_temp_max_c", "air_temp_min_c", "temp_amplitude_c", "pressure_pa", "solar_longitude_ls"]
-    sub_df = df.dropna(subset=["sol", "temp_amplitude_c", "pressure_pa"]).copy()
-    sub_df = sub_df.sort_values("sol").reset_index(drop=True)
-
-    # Construct past lags only
-    sub_df["temp_amplitude_lag1"] = sub_df["temp_amplitude_c"].shift(1)
-    sub_df["temp_amplitude_lag2"] = sub_df["temp_amplitude_c"].shift(2)
-    sub_df["temp_amplitude_rolling7"] = sub_df["temp_amplitude_c"].shift(1).rolling(window=7, min_periods=3).mean()
-    sub_df["pressure_lag1"] = sub_df["pressure_pa"].shift(1)
-    sub_df["pressure_diff1"] = sub_df["pressure_pa"].shift(1) - sub_df["pressure_pa"].shift(2)
+    sub_df = df.dropna(subset=["sol"]).copy()
+    sub_df["sol"] = pd.to_numeric(sub_df["sol"], errors="coerce")
+    sub_df = sub_df.dropna(subset=["sol"]).copy()
+    sub_df["sol"] = sub_df["sol"].astype(int)
     
+    # Deduplicate sols keeping the latest recorded telemetry
+    sub_df = sub_df.drop_duplicates(subset=["sol"], keep="last").sort_values("sol")
+
+    if sub_df.empty:
+        return pd.DataFrame(), pd.Series(dtype=float), pd.DataFrame()
+
+    min_sol = int(sub_df["sol"].min())
+    max_sol = int(sub_df["sol"].max())
+
+    # Reindex onto full continuous Martian Sol range [min_sol .. max_sol]
+    full_sol_index = pd.RangeIndex(start=min_sol, stop=max_sol + 1, name="sol")
+    reindexed_df = sub_df.set_index("sol").reindex(full_sol_index).reset_index()
+
+    # Reconstruct true past lags based on exact Sol calendar positions
+    reindexed_df["temp_amplitude_lag1"] = reindexed_df["temp_amplitude_c"].shift(1)
+    reindexed_df["temp_amplitude_lag2"] = reindexed_df["temp_amplitude_c"].shift(2)
+    # Rolling 7-Sol window over the previous 7 actual calendar Sols (min 3 observed Sols)
+    reindexed_df["temp_amplitude_rolling7"] = reindexed_df["temp_amplitude_c"].shift(1).rolling(window=7, min_periods=3).mean()
+    reindexed_df["pressure_lag1"] = reindexed_df["pressure_pa"].shift(1)
+    reindexed_df["pressure_diff1"] = reindexed_df["pressure_pa"].shift(1) - reindexed_df["pressure_pa"].shift(2)
+
     # Solar Longitude cyclical encoding
-    ls = sub_df["solar_longitude_ls"].fillna(0.0)
-    sub_df["sin_ls"] = np.sin(np.radians(ls))
-    sub_df["cos_ls"] = np.cos(np.radians(ls))
+    ls = reindexed_df["solar_longitude_ls"].ffill().fillna(0.0)
+    reindexed_df["sin_ls"] = np.sin(np.radians(ls))
+    reindexed_df["cos_ls"] = np.cos(np.radians(ls))
 
-    # Drop warm-up rows
-    model_df = sub_df.dropna(subset=[
-        "temp_amplitude_lag1", "temp_amplitude_lag2", "temp_amplitude_rolling7",
-        "pressure_lag1", "pressure_diff1", "sin_ls", "cos_ls"
-    ]).copy()
-
-    # Feature columns
+    # Drop rows where target or mandatory features are missing
     feature_cols = [
         "temp_amplitude_lag1", "temp_amplitude_lag2", "temp_amplitude_rolling7",
         "pressure_lag1", "pressure_diff1", "sin_ls", "cos_ls"
     ]
+    model_df = reindexed_df.dropna(subset=["temp_amplitude_c"] + feature_cols).copy()
+    model_df = model_df.reset_index(drop=True)
 
     X = model_df[feature_cols].copy()
     y = model_df["temp_amplitude_c"].copy()
@@ -185,7 +202,7 @@ def run_model_experiment(records: List[Dict[str, Any]]) -> Dict[str, Any]:
             "actual_amplitude_c": round(float(row["temp_amplitude_c"]), 2),
             "predicted_rf_c": round(float(row["pred"]), 2),
             "error_c": round(float(row["abs_error"]), 2),
-            "phenomenon": "Abrupt Atmospheric Opacity Collapse (Tau Surge) under Dust Heating"
+            "phenomenon": "Forecasting residual (> 14°C) during dust window; unconfirmed hypothesis: atmospheric opacity surge (no in-situ tau column telemetry)"
         })
 
     # Sample test curve for chart visualization (decimated for clarity)
@@ -200,6 +217,8 @@ def run_model_experiment(records: List[Dict[str, Any]]) -> Dict[str, Any]:
             "predicted_rf": round(float(row["pred"]), 2),
             "persistence_baseline": round(float(row["temp_amplitude_lag1"]), 2)
         })
+
+    rf_improvement = round(((base_mae - rf_mae) / base_mae) * 100, 1) if base_mae > 1e-6 else None
 
     return {
         "task_description": "Next-Sol Diurnal Temperature Amplitude Forecasting (Thermal Stress Prediction)",
@@ -243,7 +262,7 @@ def run_model_experiment(records: List[Dict[str, Any]]) -> Dict[str, Any]:
                 "rmse": round(rf_rmse, 2),
                 "r2": round(rf_r2, 3),
                 "type": "Machine Learning",
-                "improvement_over_baseline_pct": round(((base_mae - rf_mae) / base_mae) * 100, 1),
+                "improvement_over_baseline_pct": rf_improvement,
                 "data_origin": "predicted"
             }
         ],

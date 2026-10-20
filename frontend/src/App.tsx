@@ -15,10 +15,10 @@ import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import { MissionOverviewData } from "./lib/types";
 import { api } from "./lib/api";
 
-const FALLBACK_OVERVIEW: MissionOverviewData = {
+const OFFLINE_FALLBACK_OVERVIEW: MissionOverviewData = {
   project_title: "Mars Mission Intelligence",
-  system_status: "OPERATIONAL",
-  data_freshness: "REAL NASA TELEMETRY (FALLBACK CACHE)",
+  system_status: "STANDALONE CACHE (BACKEND OFFLINE)",
+  data_freshness: "OFFLINE HISTORICAL SNAPSHOT",
   total_observations: 4745,
   total_sols_recorded: 4745,
   active_datasets_count: 3,
@@ -42,7 +42,7 @@ const FALLBACK_OVERVIEW: MissionOverviewData = {
       anomaly_intensity: { score: 55.0, weight: 0.25, metric: "55/100", rationale: "Isolation forest intensity" },
       seasonal_dust_forcing: { score: 62.0, weight: 0.15, metric: "Ls 142.6°", rationale: "Seasonal dust forcing" }
     },
-    disclaimer: "Engineering risk metric derived from NASA observations."
+    disclaimer: "Static historical snapshot rendered in offline mode. Live telemetry stream unavailable."
   },
   data_origin: "observed"
 };
@@ -76,6 +76,8 @@ export const App: React.FC = () => {
   const [isJudgeMode, setIsJudgeMode] = useState<boolean>(false);
   const [overviewData, setOverviewData] = useState<MissionOverviewData | null>(null);
   const [selectedReplaySol, setSelectedReplaySol] = useState<number | null>(null);
+  const [isOffline, setIsOffline] = useState<boolean>(false);
+  const [isRetrying, setIsRetrying] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -83,16 +85,35 @@ export const App: React.FC = () => {
       .then((res) => {
         if (isMounted) {
           setOverviewData(res);
+          setIsOffline(false);
         }
       })
       .catch((err) => {
-        console.warn("Using fallback overview telemetry cache:", err);
+        console.warn("Backend API unreachable. Using offline telemetry cache:", err);
         if (isMounted) {
-          setOverviewData(FALLBACK_OVERVIEW);
+          setOverviewData(OFFLINE_FALLBACK_OVERVIEW);
+          setIsOffline(true);
         }
       });
     return () => { isMounted = false; };
   }, []);
+
+  const handleManualRetry = () => {
+    setIsRetrying(true);
+    api.getOverview()
+      .then((res) => {
+        setOverviewData(res);
+        setIsOffline(false);
+      })
+      .catch((err) => {
+        console.warn("Backend API retry failed. Using offline telemetry cache:", err);
+        setOverviewData(OFFLINE_FALLBACK_OVERVIEW);
+        setIsOffline(true);
+      })
+      .finally(() => {
+        setIsRetrying(false);
+      });
+  };
 
   const handleNavigate = (tabId: string, sol?: number) => {
     const normalized = normalizeTab(tabId);
@@ -111,12 +132,30 @@ export const App: React.FC = () => {
         setActiveTab={setActiveTab}
         isJudgeMode={isJudgeMode}
         setIsJudgeMode={setIsJudgeMode}
-        systemStatus={overviewData?.system_status || "OPERATIONAL"}
-        dataFreshness={overviewData?.data_freshness || "REAL NASA TELEMETRY CACHED"}
+        systemStatus={overviewData?.system_status || (isOffline ? "STANDALONE CACHE" : "OPERATIONAL")}
+        dataFreshness={overviewData?.data_freshness || (isOffline ? "OFFLINE CACHED SNAPSHOT" : "REAL NASA TELEMETRY CACHED")}
       />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-3 md:px-6 md:py-4 space-y-4">
+        {/* Offline Outage Notice */}
+        {isOffline && (
+          <div className="bg-amber-950/60 border border-amber-500/50 rounded-lg p-3 px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-200 shadow-lg">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
+              <span>
+                <strong>Backend Disconnected:</strong> Displaying offline historical telemetry cache. Live dynamic queries and model calculations are currently unavailable.
+              </span>
+            </div>
+            <button
+              onClick={handleManualRetry}
+              disabled={isRetrying}
+              className="px-3 py-1 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded font-mono font-bold tracking-wider transition-colors"
+            >
+              {isRetrying ? "RECONNECTING..." : "RETRY CONNECTION"}
+            </button>
+          </div>
+        )}
         {/* Judge Demo Banner (if active) */}
         {isJudgeMode && (
           <JudgeDemoMode

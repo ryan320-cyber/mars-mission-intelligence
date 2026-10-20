@@ -31,9 +31,19 @@ from app.analytics.anomaly import (
     detect_multivariate_anomalies, 
     generate_event_replay
 )
-from app.analytics.challenge_index import calculate_meci, simulate_scenario
+from app.analytics.challenge_index import calculate_meci, simulate_scenario, compute_current_meci_from_telemetry
 from app.ml.model_lab import run_model_experiment
 from app.ai.grounded_scientist import query_mars_ai_scientist, PRESET_QUESTIONS
+import numpy as np
+
+SUPPORTED_NUMERIC_VARIABLES = {
+    "air_temp_max_c",
+    "air_temp_min_c",
+    "air_temp_mean_c",
+    "temp_amplitude_c",
+    "pressure_pa",
+    "solar_longitude_ls"
+}
 
 api_router = APIRouter(redirect_slashes=False)
 
@@ -54,14 +64,8 @@ def get_mission_overview() -> Dict[str, Any]:
 
     latest_obs = curiosity[-1] if curiosity else {}
     
-    # Calculate current MECI
-    meci = calculate_meci(
-        temp_amplitude_c=latest_obs.get("temp_amplitude_c"),
-        pressure_pa=latest_obs.get("pressure_pa"),
-        pressure_rate_of_change=0.8,
-        solar_longitude_ls=latest_obs.get("solar_longitude_ls"),
-        anomaly_intensity=15.0
-    )
+    # Calculate unified current MECI
+    meci = compute_current_meci_from_telemetry(curiosity, _cached_multivariate_anomalies)
 
     return {
         "project_title": "Mars Mission Intelligence",
@@ -101,7 +105,7 @@ def get_observations(
     start_sol: Optional[int] = Query(None, description="Starting Sol filter"),
     end_sol: Optional[int] = Query(None, description="Ending Sol filter"),
     downsample: bool = Query(True, description="Downsample large records for rendering performance"),
-    max_points: int = Query(400, description="Max downsampled points")
+    max_points: int = Query(400, ge=2, le=5000, description="Max downsampled points (2 to 5000)")
 ) -> Dict[str, Any]:
     """Query verified observational time series."""
     if mission.lower() in ["curiosity", "msl"]:
@@ -139,7 +143,7 @@ def get_observations(
 @api_router.get("/profiles")
 def get_vertical_profiles(
     downsample: bool = Query(False, description="Downsample vertical sounding layers for smaller network payload"),
-    target_levels: int = Query(15, description="Number of target vertical levels to retain")
+    target_levels: int = Query(15, ge=3, le=100, description="Number of target vertical levels to retain (3 to 100)")
 ) -> Dict[str, Any]:
     """Retrieve MRO Mars Climate Sounder (MCS) vertical atmospheric sounding profiles."""
     profiles = data_loader.get_mcs_profiles()
@@ -161,6 +165,17 @@ def get_anomalies(
     global _cached_multivariate_anomalies
     curiosity = data_loader.get_curiosity_records()
     
+    if variable not in SUPPORTED_NUMERIC_VARIABLES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported numerical variable '{variable}'. Supported variables are: {sorted(SUPPORTED_NUMERIC_VARIABLES)}"
+        )
+    if threshold <= 0 or not np.isfinite(threshold) or threshold > 50.0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Anomaly threshold must be a strictly positive finite number in range (0.0, 50.0], got {threshold}."
+        )
+
     univariate = detect_univariate_anomalies(curiosity, variable=variable, threshold=threshold)
     
     if _cached_multivariate_anomalies is None:
@@ -187,6 +202,11 @@ def get_event_replay(target_sol: int) -> Dict[str, Any]:
 @api_router.get("/statistics/summary")
 def get_statistics_summary(variable: str = Query("air_temp_max_c")) -> Dict[str, Any]:
     """Compute summary statistics for a given variable."""
+    if variable not in SUPPORTED_NUMERIC_VARIABLES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported numerical variable '{variable}'. Supported variables are: {sorted(SUPPORTED_NUMERIC_VARIABLES)}"
+        )
     curiosity = data_loader.get_curiosity_records()
     vals = [r.get(variable) for r in curiosity if r.get(variable) is not None]
     stats = compute_summary_statistics(vals)
@@ -212,15 +232,11 @@ def get_mission_comparison() -> Dict[str, Any]:
 @api_router.get("/challenge-index")
 def get_challenge_index() -> Dict[str, Any]:
     """Martian Environmental Challenge Index with factor decomposition."""
+    global _cached_multivariate_anomalies
     curiosity = data_loader.get_curiosity_records()
-    latest = curiosity[-1] if curiosity else {}
-    return calculate_meci(
-        temp_amplitude_c=latest.get("temp_amplitude_c"),
-        pressure_pa=latest.get("pressure_pa"),
-        pressure_rate_of_change=1.2,
-        solar_longitude_ls=latest.get("solar_longitude_ls"),
-        anomaly_intensity=25.0
-    )
+    if _cached_multivariate_anomalies is None:
+        _cached_multivariate_anomalies = detect_multivariate_anomalies(curiosity)
+    return compute_current_meci_from_telemetry(curiosity, _cached_multivariate_anomalies)
 
 @api_router.post("/challenge-index/simulate")
 def post_challenge_index_simulation(
@@ -229,20 +245,15 @@ def post_challenge_index_simulation(
     dust_storm_active: bool = Body(False, embed=True)
 ) -> Dict[str, Any]:
     """Execute simulated What-If scenario analysis."""
+    global _cached_multivariate_anomalies
     curiosity = data_loader.get_curiosity_records()
-    latest = curiosity[-1] if curiosity else {}
-    base_meci = calculate_meci(
-        temp_amplitude_c=latest.get("temp_amplitude_c"),
-        pressure_pa=latest.get("pressure_pa"),
-        pressure_rate_of_change=1.0,
-        solar_longitude_ls=latest.get("solar_longitude_ls"),
-        anomaly_intensity=10.0
-    )
+    if _cached_multivariate_anomalies is None:
+        _cached_multivariate_anomalies = detect_multivariate_anomalies(curiosity)
+    base_meci = compute_current_meci_from_telemetry(curiosity, _cached_multivariate_anomalies)
     return simulate_scenario(
-        base_meci=base_meci,
+        base_meci,
         temp_variability_multiplier=temp_variability_multiplier,
         pressure_drop_pa=hypothetical_pressure_drop_pa,
-        inject_dust_storm=dust_storm_active
     )
 
 @api_router.get("/model-lab")
@@ -274,13 +285,8 @@ def post_ai_query(
     if _cached_ml_experiment is None and len(curiosity) > 100:
         _cached_ml_experiment = run_model_experiment(curiosity)
 
+    meci = compute_current_meci_from_telemetry(curiosity, _cached_multivariate_anomalies)
     latest = curiosity[-1] if curiosity else {}
-    meci = calculate_meci(
-        temp_amplitude_c=latest.get("temp_amplitude_c"),
-        pressure_pa=latest.get("pressure_pa"),
-        pressure_rate_of_change=1.0,
-        solar_longitude_ls=latest.get("solar_longitude_ls")
-    )
 
     context = {
         "total_observations": len(curiosity),
@@ -299,7 +305,19 @@ def export_dataset(
     format: str = Query("json", description="json or csv")
 ):
     """Export filtered observations with SHA-256 integrity hash."""
-    records = data_loader.get_curiosity_records() if mission == "curiosity" else data_loader.get_insight_records()
+    m = mission.lower().strip()
+    f = format.lower().strip()
+    if m not in ["curiosity", "msl", "insight"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported export mission '{mission}'. Supported missions are 'curiosity' and 'insight'."
+        )
+    if f not in ["json", "csv"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported export format '{format}'. Supported formats are 'json' and 'csv'."
+        )
+    records = data_loader.get_curiosity_records() if m in ["curiosity", "msl"] else data_loader.get_insight_records()
     
     if format == "csv":
         output = io.StringIO()

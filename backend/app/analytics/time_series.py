@@ -57,19 +57,32 @@ def downsample_time_series(
     max_points: int = 500
 ) -> List[Dict[str, Any]]:
     """
-    Downsamples a large series to max_points using Largest-Triangle-Three-Buckets (LTTB) 
-    or uniform decimation to ensure smooth chart performance while preserving extrema.
+    Downsamples a large series to at most max_points using linear grid sampling.
+    Strictly guarantees output_count <= max_points while preserving the first
+    and latest observations.
     """
-    if len(records) <= max_points:
-        return records
+    if max_points <= 0:
+        raise ValueError(f"max_points must be a strictly positive integer >= 1, got {max_points}")
 
-    step = max(1, len(records) // max_points)
-    sampled = records[::step]
+    if not records:
+        return []
+
+    n = len(records)
+    if n <= max_points:
+        return list(records)
+
+    if max_points == 1:
+        return [records[-1]]
+
+    # Generate at most max_points evenly spaced indices strictly covering 0 to n - 1
+    indices = np.round(np.linspace(0, n - 1, max_points)).astype(int)
+    unique_indices = sorted(list(dict.fromkeys(indices)))
     
-    # Always include the latest observation
-    if records[-1] not in sampled:
-        sampled.append(records[-1])
-    return sampled
+    # Guarantee output length does not exceed max_points
+    if len(unique_indices) > max_points:
+        unique_indices = unique_indices[:max_points]
+
+    return [records[i] for i in unique_indices]
 
 def downsample_vertical_profiles(
     profiles: List[Dict[str, Any]], 
@@ -77,9 +90,16 @@ def downsample_vertical_profiles(
 ) -> List[Dict[str, Any]]:
     """
     Smart downsampling for MRO MCS atmospheric sounding profiles (0-80 km).
-    Shrinks vertical transmission payload while strictly preserving 1-sigma uncertainty envelopes,
-    atmospheric boundary layer surface levels, and mesospheric extrema.
+    Shrinks vertical transmission payload while strictly preserving:
+      1. Surface boundary layer level (altitude = min altitude, index 0).
+      2. Upper atmospheric boundary (altitude = max altitude, index n - 1).
+      3. Scientifically significant local temperature extrema (mesospheric inversion peak, tropospheric min).
+      4. 1-sigma uncertainty envelopes and all associated atmospheric layer properties.
+    Guarantees retained_level_count <= target_levels and target_levels >= 2.
     """
+    if target_levels < 2:
+        raise ValueError(f"target_levels must be >= 2 to preserve atmospheric boundaries, got {target_levels}")
+
     downsampled_profiles = []
     for prof in profiles:
         levels = prof.get("levels", [])
@@ -91,12 +111,41 @@ def downsample_vertical_profiles(
         sorted_levels = sorted(levels, key=lambda lvl: lvl.get("altitude_km", 0.0))
         n = len(sorted_levels)
         
-        # Select target_levels evenly spaced indices including first (0) and last (n - 1)
-        selected_indices = np.round(np.linspace(0, n - 1, target_levels)).astype(int).tolist()
-        # Remove any duplicates while preserving order
-        unique_indices = sorted(list(dict.fromkeys(selected_indices)))
+        # 1. Critical Boundaries: Surface (0) and Top of Atmosphere (n - 1)
+        critical_indices = {0, n - 1}
 
-        sampled_levels = [sorted_levels[i] for i in unique_indices]
+        # 2. Identify local temperature extrema (thermal inversions / cold points)
+        for i in range(1, n - 1):
+            t_prev = sorted_levels[i - 1].get("temperature_k")
+            t_curr = sorted_levels[i].get("temperature_k")
+            t_next = sorted_levels[i + 1].get("temperature_k")
+            if t_prev is not None and t_curr is not None and t_next is not None:
+                # Local maximum (thermal inversion) or local minimum
+                if (t_curr > t_prev and t_curr > t_next) or (t_curr < t_prev and t_curr < t_next):
+                    critical_indices.add(i)
+
+        # 3. Evenly spaced grid to fill remaining resolution up to target_levels
+        grid_indices = set(np.round(np.linspace(0, n - 1, target_levels)).astype(int).tolist())
+        
+        # Combine critical indices and grid indices
+        combined_indices = sorted(list(critical_indices | grid_indices))
+
+        # If combined exceeds target_levels, prioritize boundaries and extrema, pruning intermediate grid
+        if len(combined_indices) > target_levels:
+            # Must keep 0 and n-1
+            must_keep = {0, n - 1} | critical_indices
+            optional = [idx for idx in combined_indices if idx not in must_keep]
+            slots_available = max(0, target_levels - len(must_keep))
+            if slots_available > 0 and optional:
+                step = max(1, len(optional) // slots_available)
+                kept_optional = set(optional[::step][:slots_available])
+            else:
+                kept_optional = set()
+            selected_indices = sorted(list(must_keep | kept_optional))[:target_levels]
+        else:
+            selected_indices = combined_indices
+
+        sampled_levels = [sorted_levels[i] for i in selected_indices]
         prof_copy = dict(prof)
         prof_copy["levels"] = sampled_levels
         prof_copy["downsampled"] = True

@@ -156,3 +156,63 @@ def test_processed_curiosity_records_provenance_status():
     curio_card = scorecard.get("curiosity_msl", {})
     assert curio_card.get("provenance_status") == ProvenanceStatus.CACHED_VERIFIED_SOURCE.value
 
+def test_self_declared_mission_name_cannot_confer_source_verification():
+    """Phase 2.1 Regression: Merely naming NASA/REMS/MSL in a record cannot verify it."""
+    from app.data.ingestion import ingestion_engine, ProvenanceStatus
+    fabricated_records = [
+        {
+            "sol": 3000,
+            "terrestrial_date": "2021-01-01",
+            "data_source": "NASA REMS MSL CURIOSITY OFFICIAL TELEMETRY",
+            "dataset_id": "MSL-M-REMS-MOD-5-V1.0",
+            "mission": "MSL Curiosity"
+        }
+    ]
+    # Ingestion evaluation with unverified channel
+    tagged = ingestion_engine._validate_and_tag_curiosity(fabricated_records, is_source_verified=False)
+    assert len(tagged) == 1
+    assert tagged[0]["provenance_status"] == ProvenanceStatus.UNVERIFIED_SOURCE
+    assert tagged[0]["source_authenticity"] == "UNVERIFIED"
+
+def test_missing_weather_readings_remain_none_not_invented_strings():
+    """Phase 6.2 Regression: Missing sensor fields must be None, never invented placeholders like 'Sunny'."""
+    from app.data.ingestion import ingestion_engine
+    raw_record_missing_fields = [{
+        "sol": "5001",
+        "terrestrial_date": "2026-09-02",
+        "ls": "181.0",
+        "min_temp": "-70.0",
+        "max_temp": "-15.0",
+        "pressure": "840.0"
+        # intentionally omitting wind_speed, atmo_opacity, season
+    }]
+    processed = ingestion_engine._process_curiosity_records(raw_record_missing_fields)
+    assert len(processed) == 1
+    rec = processed[0]
+    assert rec["wind_speed_ms"] is None
+    assert rec["atmospheric_opacity"] is None
+    assert rec["pressure_string"] is None
+
+def test_data_loader_defensive_copies_prevent_cache_mutation():
+    """Phase 6.3 Regression: Mutating returned records must not mutate the internal cache."""
+    recs = data_loader.get_curiosity_records()
+    orig_sol = recs[0]["sol"]
+    orig_count = len(recs)
+
+    # Attempt mutation
+    recs[0]["sol"] = 999999
+    recs.pop()
+
+    # Re-fetch from data_loader
+    recs_after = data_loader.get_curiosity_records()
+    assert recs_after[0]["sol"] == orig_sol
+    assert len(recs_after) == orig_count
+
+    # Test get_sol_record mutation protection
+    sol_rec = data_loader.get_sol_record(orig_sol)
+    assert sol_rec is not None
+    sol_rec["pressure_pa"] = -99999.9
+    sol_rec_fresh = data_loader.get_sol_record(orig_sol)
+    assert sol_rec_fresh["pressure_pa"] != -99999.9
+
+

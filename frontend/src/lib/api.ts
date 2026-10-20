@@ -10,9 +10,22 @@ import {
   DataCatalogItem
 } from "./types";
 
-const rawBase = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
-const baseUrl = rawBase.replace(/\/api$/, '');
-export const API_BASE = `${baseUrl}/api`;
+const getBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && typeof envUrl === "string") {
+    return envUrl.replace(/\/+$/, '').replace(/\/api$/, '');
+  }
+  // In production builds, never default to 127.0.0.1 (user's local device).
+  // Use relative root so requests route through the hosting origin or reverse proxy.
+  if (import.meta.env.PROD) {
+    return '';
+  }
+  // Local development default
+  return 'http://127.0.0.1:8000';
+};
+
+const baseUrl = getBaseUrl();
+export const API_BASE = baseUrl ? `${baseUrl}/api` : '/api';
 
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}${endpoint}`;

@@ -5,8 +5,10 @@
     "is_synthetic": false,
     "data_origin": "observed",
     "total_source_records": 4745,
-    "valid_records_count": 4745,
+    "total_evaluated_records": 4745,
+    "retained_records_count": 4745,
     "rejected_records_count": 0,
+    "valid_records_count": 4745,
     "sol_range": "Sol 1 to Sol 4995",
     "observation_dates": "2012-08-07 to 2026-08-25",
     "completeness_pressure_pct": 99.4,
@@ -55,5 +57,5 @@
     "uncertainty_status": "PASS (Explicit 1-sigma uncertainty bands present per level)",
     "assessment": "PARAMETERIZED_SOUNDING_DEMONSTRATION"
   },
-  "generated_at_utc": "2026-10-19T22:53:30.770086+00:00"
+  "generated_at_utc": "2026-10-20T13:11:02.065742+00:00"
 }

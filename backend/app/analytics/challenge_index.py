@@ -164,3 +164,68 @@ def simulate_scenario(
         "delta_description": f"{'+' if delta > 0 else ''}{delta} points vs observed baseline",
         "warning": "This output is a mathematical simulation for educational sensitivity analysis and is not a forecast."
     }
+
+def compute_current_meci_from_telemetry(
+    curiosity_records: List[Dict[str, Any]],
+    anomalies: Optional[List[Dict[str, Any]]] = None,
+    weights: Optional[Dict[str, float]] = None
+) -> Dict[str, Any]:
+    """
+    Authoritative single-source-of-truth service to compute current MECI from telemetry.
+    Eliminates discrepancies between /api/overview, /api/challenge-index, exports, and AI.
+    
+    Derives:
+      - temp_amplitude_c: latest observation's temp_amplitude_c
+      - pressure_pa: latest observation's pressure_pa
+      - pressure_rate_of_change: computed from difference between latest and prior Sol pressure:
+            |P_latest - P_prior| / max(1, |Sol_latest - Sol_prior|)
+      - solar_longitude_ls: latest observation's solar_longitude_ls
+      - anomaly_intensity: checks if latest Sol was flagged as an anomaly in the anomaly set;
+            if so, extracts its intensity; otherwise 0.0.
+    """
+    if not curiosity_records:
+        return calculate_meci(
+            temp_amplitude_c=None,
+            pressure_pa=None,
+            pressure_rate_of_change=None,
+            solar_longitude_ls=None,
+            anomaly_intensity=0.0,
+            weights=weights
+        )
+
+    valid_sols = [r for r in curiosity_records if r.get("sol") is not None]
+    if not valid_sols:
+        return calculate_meci(None, None, None, None, 0.0, weights=weights)
+
+    latest = valid_sols[-1]
+    latest_sol = latest.get("sol")
+
+    # Compute empirical pressure rate of change from the immediate prior Sol with pressure
+    p_latest = latest.get("pressure_pa")
+    dp_empirical = 0.0
+    if p_latest is not None and len(valid_sols) > 1:
+        for prior in reversed(valid_sols[:-1]):
+            p_prior = prior.get("pressure_pa")
+            if p_prior is not None:
+                sol_delta = max(1, abs(int(latest_sol) - int(prior.get("sol", latest_sol))))
+                dp_empirical = round(abs(float(p_latest) - float(p_prior)) / sol_delta, 2)
+                break
+
+    # Compute empirical anomaly intensity for latest Sol if present in detected anomalies
+    anomaly_intensity = 0.0
+    if anomalies:
+        for a in anomalies:
+            if a.get("sol") == latest_sol:
+                anomaly_intensity = float(a.get("anomaly_intensity", a.get("modified_z_score", 0.0)))
+                if 0.0 < anomaly_intensity < 10.0:
+                    anomaly_intensity = min(100.0, anomaly_intensity * 10.0)
+                break
+
+    return calculate_meci(
+        temp_amplitude_c=latest.get("temp_amplitude_c"),
+        pressure_pa=p_latest,
+        pressure_rate_of_change=dp_empirical,
+        solar_longitude_ls=latest.get("solar_longitude_ls"),
+        anomaly_intensity=anomaly_intensity,
+        weights=weights
+    )

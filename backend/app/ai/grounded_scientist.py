@@ -426,7 +426,14 @@ def query_mars_ai_scientist(
                 "It lacks real-time orbital column dust opacity telemetry and cannot anticipate sudden regional dust lifting events."
             )
         else:
-            improvement = rf.get("improvement_over_baseline_pct", round(((persistence["mae"] - rf["mae"]) / persistence["mae"]) * 100, 1))
+            base_mae = float(persistence.get("mae", 0.0))
+            rf_mae = float(rf.get("mae", 0.0))
+            if "improvement_over_baseline_pct" in rf and rf["improvement_over_baseline_pct"] is not None:
+                improvement = rf["improvement_over_baseline_pct"]
+            elif base_mae > 1e-6:
+                improvement = round(((base_mae - rf_mae) / base_mae) * 100, 1)
+            else:
+                improvement = 0.0
             finding = (
                 f"On the out-of-sample test partition ({split.get('test_samples')} continuous Sols, {split.get('test_sol_range')}), "
                 f"the Random Forest Regressor achieves MAE = {rf['mae']}°C, RMSE = {rf['rmse']}°C, and R² = {rf['r2']}."
