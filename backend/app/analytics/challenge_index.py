@@ -80,10 +80,10 @@ def calculate_meci(
         tier_color = "amber"
     elif score_rounded < 80.0:
         tier = "HIGH"
-        tier_color = "warning"
+        tier_color = "#f59e0b"
     else:
         tier = "EXTREME"
-        tier_color = "danger"
+        tier_color = "#ef4444"
 
     return {
         "index_score": score_rounded,

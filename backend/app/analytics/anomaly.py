@@ -137,16 +137,13 @@ def detect_multivariate_anomalies(
     anomalies.sort(key=lambda x: x["anomaly_intensity"], reverse=True)
     return anomalies
 
-# Precomputed fast indexed event replay lookup
-_sol_record_index: Optional[Dict[int, Dict[str, Any]]] = None
-_sorted_sols_list: Optional[List[int]] = None
+# Event replay Sol index — built fresh from the supplied records each call.
+# Avoids stale-cache bugs when DataLoader reloads observations between requests.
 
 def _get_sol_index(records: List[Dict[str, Any]]) -> Tuple[Dict[int, Dict[str, Any]], List[int]]:
-    global _sol_record_index, _sorted_sols_list
-    if _sol_record_index is None:
-        _sol_record_index = {int(r["sol"]): r for r in records if r.get("sol") is not None}
-        _sorted_sols_list = sorted(_sol_record_index.keys())
-    return _sol_record_index, _sorted_sols_list
+    """Build O(n) Sol→record mapping from the provided records list (no global cache)."""
+    sol_map = {int(r["sol"]): r for r in records if r.get("sol") is not None}
+    return sol_map, sorted(sol_map.keys())
 
 def generate_event_replay(
     records: List[Dict[str, Any]], 

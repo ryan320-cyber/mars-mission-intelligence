@@ -131,3 +131,38 @@ def test_zero_baseline_division_guard():
     for m in res["models_comparison"]:
         assert m["mae"] >= 0.0
 
+
+def test_ridge_model_has_improvement_over_baseline_pct():
+    """Regression: Ridge model must expose improvement_over_baseline_pct (not None) so frontend can display delta."""
+    records = generate_synthetic_continuous_observations(n_sols=300)
+    res = run_model_experiment(records)
+    ridge = next(m for m in res["models_comparison"] if "Ridge" in m["model_name"])
+    assert "improvement_over_baseline_pct" in ridge, "Ridge must include improvement_over_baseline_pct field"
+    # Value may be None only if baseline MAE is effectively zero (degenerate case), float otherwise
+    if ridge["improvement_over_baseline_pct"] is not None:
+        assert isinstance(ridge["improvement_over_baseline_pct"], float)
+
+
+def test_martian_season_column_absent_uses_ls_fallback():
+    """Regression: model_lab must not crash when martian_season column is absent; Ls-based season bins used instead."""
+    records = []
+    for sol in range(1, 350):
+        ls = float((sol * 0.5) % 360.0)
+        amp = 45.0 + 10.0 * np.sin(np.radians(ls))
+        records.append({
+            "sol": sol,
+            "temp_amplitude_c": amp,
+            "air_temp_max_c": -20.0 + amp / 2,
+            "air_temp_min_c": -20.0 - amp / 2,
+            "pressure_pa": 800.0 + 50.0 * np.cos(np.radians(ls)),
+            "solar_longitude_ls": ls,
+            # NOTE: martian_season deliberately omitted
+        })
+    res = run_model_experiment(records)
+    assert "slice_error_analysis" in res
+    seasonal_slices = res["slice_error_analysis"]["seasonal_slices"]
+    # Should have produced at least 1 Ls-based season bin
+    assert len(seasonal_slices) >= 1, "Ls fallback season binning must produce at least 1 bin"
+    for label, stats in seasonal_slices.items():
+        assert "mae" in stats
+        assert "sample_count" in stats

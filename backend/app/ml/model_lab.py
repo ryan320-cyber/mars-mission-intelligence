@@ -14,17 +14,15 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_sco
 
 def build_feature_matrix(records: List[Dict[str, Any]]) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
     """
-    Builds supervised feature matrix with strict past-looking temporal lags:
+    Builds supervised feature matrix with strict past-looking temporal lags.
     Features at Sol t:
-      - air_temp_min_lag1 (t-1)
-      - air_temp_max_lag1 (t-1)
-      - temp_amplitude_lag1 (t-1)
-      - temp_amplitude_lag2 (t-2)
-      - temp_amplitude_rolling7 (mean over t-1..t-7)
-      - pressure_lag1 (t-1)
-      - pressure_diff1 (p(t-1) - p(t-2))
-      - sin_ls (sin(2*pi*Ls / 360))
-      - cos_ls (cos(2*pi*Ls / 360))
+      - temp_amplitude_lag1    : diurnal swing at Sol t-1
+      - temp_amplitude_lag2    : diurnal swing at Sol t-2
+      - temp_amplitude_rolling7: rolling mean over Sols t-7..t-1 (min 3 observed)
+      - pressure_lag1          : surface pressure at Sol t-1
+      - pressure_diff1         : pressure(t-1) - pressure(t-2)
+      - sin_ls                 : sin(2π·Ls/360) cyclical Solar Longitude encoding
+      - cos_ls                 : cos(2π·Ls/360) cyclical Solar Longitude encoding
     Target at Sol t:
       - temp_amplitude_c (diurnal thermal swing at Sol t)
 
@@ -180,14 +178,28 @@ def run_model_experiment(records: List[Dict[str, Any]]) -> Dict[str, Any]:
     test_analysis_df["abs_error"] = np.abs(residuals)
     test_analysis_df["pred"] = y_test_rf
 
-    # Slice by Martian Season
+    # Slice by Martian Season — fall back to Ls-based binning if column absent
     season_slices = {}
-    for season, grp in test_analysis_df.groupby("martian_season"):
-        season_slices[season] = {
-            "sample_count": len(grp),
-            "mae": round(float(grp["abs_error"].mean()), 2),
-            "max_error": round(float(grp["abs_error"].max()), 2)
-        }
+    if "martian_season" in test_analysis_df.columns and test_analysis_df["martian_season"].notna().any():
+        for season, grp in test_analysis_df.groupby("martian_season", dropna=True):
+            season_slices[str(season)] = {
+                "sample_count": len(grp),
+                "mae": round(float(grp["abs_error"].mean()), 2),
+                "max_error": round(float(grp["abs_error"].max()), 2)
+            }
+    else:
+        # Fallback: bin by Solar Longitude quarter when martian_season column is missing
+        ls_col = test_analysis_df["solar_longitude_ls"].ffill().fillna(0.0)
+        bins = [(0, 90, "Northern Spring"), (90, 180, "Northern Summer"),
+                (180, 270, "Northern Autumn"), (270, 360, "Northern Winter")]
+        for ls_lo, ls_hi, label in bins:
+            grp = test_analysis_df[(ls_col >= ls_lo) & (ls_col < ls_hi)]
+            if len(grp) > 0:
+                season_slices[label] = {
+                    "sample_count": len(grp),
+                    "mae": round(float(grp["abs_error"].mean()), 2),
+                    "max_error": round(float(grp["abs_error"].max()), 2)
+                }
 
     # Isolate Solar Longitude Ls in [180 deg, 270 deg] (Martian Dust Storm Season)
     dust_season_mask = (test_analysis_df["solar_longitude_ls"] >= 180.0) & (test_analysis_df["solar_longitude_ls"] <= 270.0)
@@ -254,6 +266,7 @@ def run_model_experiment(records: List[Dict[str, Any]]) -> Dict[str, Any]:
                 "rmse": round(ridge_rmse, 2),
                 "r2": round(ridge_r2, 3),
                 "type": "Machine Learning",
+                "improvement_over_baseline_pct": round(((base_mae - ridge_mae) / base_mae) * 100, 1) if base_mae > 1e-6 else None,
                 "data_origin": "predicted"
             },
             {
