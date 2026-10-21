@@ -689,7 +689,7 @@ class DataIngestionEngine:
             "generated_at_utc": datetime.now(timezone.utc).isoformat()
         }
 
-      try:
+             try:
             with open(self.quality_report_file, "w", encoding="utf-8") as f:
                 json.dump(scorecard, f, indent=2)
         except OSError:
