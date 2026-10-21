@@ -689,8 +689,11 @@ class DataIngestionEngine:
             "generated_at_utc": datetime.now(timezone.utc).isoformat()
         }
 
-        with open(self.quality_report_file, "w", encoding="utf-8") as f:
-            json.dump(scorecard, f, indent=2)
+      try:
+            with open(self.quality_report_file, "w", encoding="utf-8") as f:
+                json.dump(scorecard, f, indent=2)
+        except OSError:
+            pass
 
         return scorecard
 
