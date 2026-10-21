@@ -1,3 +1,4 @@
+from fastapi.middleware.cors import CORSMiddleware
 """
 Mars Mission Intelligence Backend Application.
 NASA Data + AI Scientific Analysis Platform for Mars Exploration.
