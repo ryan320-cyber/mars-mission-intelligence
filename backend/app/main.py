@@ -1,4 +1,3 @@
-from fastapi.middleware.cors import CORSMiddleware
 """
 Mars Mission Intelligence Backend Application.
 NASA Data + AI Scientific Analysis Platform for Mars Exploration.
@@ -13,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
-from app.core.config import PROJECT_NAME, VERSION, API_V1_STR, get_cors_settings
+from app.core.config import PROJECT_NAME, VERSION, API_V1_STR
 from app.core.data_loader import data_loader
 from app.api.router import api_router
 
@@ -49,11 +48,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Allow all origins for seamless Vercel frontend-backend communication
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # GZip Compression Middleware (Directive: compress payloads > 1000 bytes)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
-
-# CORS only allows explicitly configured frontend origins in production.
-app.add_middleware(CORSMiddleware, **get_cors_settings())
 
 # Request Timing & Telemetry Middleware
 @app.middleware("http")
