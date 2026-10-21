@@ -70,7 +70,7 @@ def get_mission_overview() -> Dict[str, Any]:
     return {
         "project_title": "Mars Mission Intelligence",
         "system_status": "OPERATIONAL",
-        "data_freshness": "REAL NASA TELEMETRY CACHED",
+        "data_freshness": "NASA MARS WEATHER SERVICE FEED (CACHED)",
         "total_observations": len(curiosity) + len(insight),
         "total_sols_recorded": len(curiosity),
         "active_datasets_count": len(DATASET_CATALOG),
@@ -240,8 +240,8 @@ def get_challenge_index() -> Dict[str, Any]:
 
 @api_router.post("/challenge-index/simulate")
 def post_challenge_index_simulation(
-    temp_variability_multiplier: float = Body(1.2, embed=True),
-    hypothetical_pressure_drop_pa: float = Body(15.0, embed=True),
+    temp_variability_multiplier: float = Body(1.2, embed=True, ge=0.0, le=5.0),
+    hypothetical_pressure_drop_pa: float = Body(15.0, embed=True, ge=0.0, le=500.0),
     dust_storm_active: bool = Body(False, embed=True)
 ) -> Dict[str, Any]:
     """Execute simulated What-If scenario analysis."""
@@ -319,7 +319,7 @@ def export_dataset(
         )
     records = data_loader.get_curiosity_records() if m in ["curiosity", "msl"] else data_loader.get_insight_records()
     
-    if format == "csv":
+    if f == "csv":
         output = io.StringIO()
         if records:
             writer = csv.DictWriter(output, fieldnames=list(records[0].keys()))
@@ -332,7 +332,7 @@ def export_dataset(
             io.StringIO(content),
             media_type="text/csv",
             headers={
-                "Content-Disposition": f"attachment; filename={mission}_mars_telemetry.csv",
+                "Content-Disposition": f"attachment; filename={m}_mars_telemetry.csv",
                 "X-Dataset-SHA256": sha256
             }
         )
@@ -341,5 +341,5 @@ def export_dataset(
         content_str = json.dumps(records, indent=2)
         sha256 = hashlib.sha256(content_str.encode("utf-8")).hexdigest()
         return JSONResponse(
-            content={"metadata": {"mission": mission, "count": len(records), "sha256": sha256}, "data": records}
+            content={"metadata": {"mission": m, "count": len(records), "sha256": sha256}, "data": records}
         )

@@ -6,15 +6,15 @@ export interface MissionOverviewData {
   total_sols_recorded: number;
   active_datasets_count: number;
   anomalies_detected_count: number;
-  latest_curiosity_sol: number;
-  latest_terrestrial_date: string;
+  latest_curiosity_sol: number | null;
+  latest_terrestrial_date: string | null;
   latest_pressure_pa: number | null;
   latest_temp_max_c: number | null;
   latest_temp_min_c: number | null;
   latest_temp_amplitude_c: number | null;
   latest_solar_longitude_ls: number | null;
-  latest_season: string;
-  current_meci: ChallengeIndexData;
+  latest_season: string | null;
+  current_meci: ChallengeIndexData | null;
   data_origin?: string;
 }
 
@@ -131,15 +131,15 @@ export interface EventReplayData {
 }
 
 export interface ChallengeIndexFactor {
-  score: number;
+  score: number | null;
   weight: number;
   metric: string;
   rationale: string;
 }
 
 export interface ChallengeIndexData {
-  index_score: number;
-  classification: "LOW" | "MODERATE" | "HIGH" | "EXTREME";
+  index_score: number | null;
+  classification: "LOW" | "MODERATE" | "HIGH" | "EXTREME" | "UNAVAILABLE";
   classification_color: string;
   formula: string;
   factor_breakdown: {

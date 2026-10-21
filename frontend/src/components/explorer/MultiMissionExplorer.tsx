@@ -105,7 +105,7 @@ export const MultiMissionExplorer: React.FC = () => {
             MULTI-MISSION MARS DATA EXPLORER
           </h2>
           <p className="text-xs text-slate-400">
-            Inspect authentic PDS archived telemetry (Curiosity REMS) alongside calibrated demonstration baselines (InSight TWINS).
+            Inspect cached NASA Mars Weather Service telemetry (Curiosity REMS) alongside calibrated demonstration baselines (InSight TWINS).
           </p>
         </div>
 
@@ -121,7 +121,7 @@ export const MultiMissionExplorer: React.FC = () => {
           >
             <span>Curiosity (Gale Crater)</span>
             <span className="text-[9px] uppercase px-1 rounded bg-mars-amber/20 text-mars-amber mt-0.5">
-              Authentic PDS Archive
+              NASA Feed Snapshot
             </span>
           </button>
           <button

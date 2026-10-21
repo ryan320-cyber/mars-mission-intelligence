@@ -1,7 +1,8 @@
 # NASA Data Sources & Provenance Registry
 
 > **Scientific Integrity Notice**: This document accurately classifies every dataset by its actual verification status.
-> Curiosity REMS records are retrieved from the NASA Mars Weather API (cached PDS-backed archive).
+> Curiosity REMS daily summaries are retrieved from NASA's Mars Weather Service RSS JSON API and bundled as a cache.
+> The related PDS MODRDR product is documented separately; the app's RSS records are not represented as direct PDS downloads.
 > InSight TWINS and MRO MCS data are calibrated **demonstration simulations**; they are not sourced from
 > PDS product downloads and must never be presented as authentic archived observations.
 
@@ -11,7 +12,7 @@
 
 | Source | Mission | Instrument | Data Status | Time Coverage | Spatial Info | Analytical Relevance |
 |---|---|---|---|---|---|---|
-| NASA Mars Weather API (PDS-backed cache) | Mars Science Laboratory (MSL) | REMS | **CACHED VERIFIED ARCHIVE** | Sol 1 to Sol 4,745+ (2012–2026) | Gale Crater (-4.59° N, 137.44° E, -4.5 km) | Critical — 13+ Earth years of continuous in-situ planetary weather |
+| NASA Mars Weather Service RSS JSON API (bundled cache) | Mars Science Laboratory (MSL) | REMS | **CACHED NASA FEED** | 4,745 records, Sol 1–4,995 (2012–2026; gaps exist) | Gale Crater (-4.59° N, 137.44° E, -4.5 km) | Critical — daily summaries from NASA's public mission feed |
 | Calibrated Simulation Baseline | InSight Lander | TWINS/APSS | **SYNTHETIC DEMONSTRATION** | 50 reference Sols (2018-epoch) | Elysium Planitia (+4.50° N, 135.62° E, -2.6 km) | Illustrative — physically plausible inter-site comparison baseline only |
 | Parameterized Reference Model | Mars Reconnaissance Orbiter (MRO) | MCS | **SYNTHETIC DEMONSTRATION** | 4 reference profiles (MY 34–35) | Global limb (0–80 km altitude) | Illustrative — hydrostatic scale-height profiles calibrated against known MCS characteristics |
 
@@ -21,24 +22,24 @@
 
 ### 1. Curiosity (MSL) REMS Daily Environmental Observations
 
-**Status: CACHED VERIFIED ARCHIVE (PDS-backed)**
+**Status: CACHED NASA MARS WEATHER SERVICE FEED**
 
 - **Mission**: Mars Science Laboratory
 - **Host**: Curiosity Rover
 - **Instrument**: Rover Environmental Monitoring Station (REMS)
-- **PDS Dataset ID**: `MSL-M-REMS-MOD-5-V1.0`
-- **PDS Collection URN**: `urn:nasa:pds:msl_rems:data_derived`
-- **Authoritative DOI**: [10.17189/1519504](https://doi.org/10.17189/1519504)
+- **NASA feed endpoint used by ingestion**: `https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json`
+- **Related PDS MODRDR dataset**: `MSL-M-REMS-5-MODRDR-V1.0`
+- **Related PDS DOI**: [10.17189/1523033](https://doi.org/10.17189/1523033)
 - **Primary Source URL**: `https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json`
-- **PDS Archive**: `https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/MARS/curiosity.html`
-- **Processing Level**: NASA Level 4 (Calibrated daily Sol metrics)
+- **Related PDS Archive**: `https://atmos.nmsu.edu/data_and_services/atmospheres_data/MARS/curiosity/rems.html`
+- **Processing**: daily summaries from the NASA weather feed; the related PDS archive is not the app's direct ingestion source
 - **Geographic Coordinates**: Gale Crater / Aeolis Palus (-4.5895° N, 137.4417° E, -4.5 km elevation MOLA)
-- **Application Provenance Tag**: `CACHED_VERIFIED_SOURCE` — data retrieved from the NASA Mars Weather API, which serves official PDS-archived REMS derived products. Records carry multi-dimensional validation: source authenticity, structural validity, physical plausibility, completeness, and analysis suitability are tracked independently.
+- **Application Provenance Tag**: `CACHED_VERIFIED_SOURCE` — records are loaded through the official NASA Mars Weather Service API or its bundled cache. The app validates dates, physical bounds, completeness, and derived values; this tag identifies the feed/cache channel and does not mean the app downloads or independently reproduces PDS MODRDR files.
 - **Variables & Units**:
   - `air_temp_max_c` / `air_temp_min_c`: Celsius (°C), uncertainty ±1.5 °C
   - `ground_temp_max_c` / `ground_temp_min_c`: Celsius (°C), uncertainty ±2.0 °C
   - `pressure_pa`: Pascals (Pa), absolute uncertainty ±2.0 Pa
-  - `solar_longitude_ls`: Degrees (°), exact NAIF SPICE ephemeris derivation
+  - `solar_longitude_ls`: Degrees (°), whole-degree values reported by the feed; not recomputed by this application
   - `atmo_opacity`: Categorical (Sunny, Cloudy)
   - `local_uv_irradiance_index`: Categorical (Low, Moderate, High, Very High)
 - **Sensor Limitations**:
@@ -92,7 +93,7 @@
 
 | Dataset | Source Type | Application Tag | `is_synthetic` | Notes |
 |---|---|---|---|---|
-| Curiosity REMS | NASA Mars Weather API (PDS-backed) | `CACHED_VERIFIED_SOURCE` | `false` | 4,745+ daily Sol records; multi-dimensional provenance tags applied |
+| Curiosity REMS | NASA Mars Weather Service RSS JSON API | `CACHED_VERIFIED_SOURCE` | `false` | 4,745 cached records, Sol 1–4,995; gaps remain; related PDS archive metadata is listed separately |
 | InSight TWINS/APSS | Calibrated simulation baseline | `SYNTHETIC` | `true` | Sol dates derived from InSight landing epoch (2018-11-26 UTC); atmospheric values are reference baselines only |
 | MRO MCS Profiles | Parameterized reference model | `SYNTHETIC` | `true` | 4 hydrostatic scale-height profiles; structurally consistent with PDS DDR format but not from actual orbital limb scans |
 
@@ -109,7 +110,7 @@ This eliminates the previously invalid date `2019-13-18` (month 13) that appeare
 | State | Meaning |
 |---|---|
 | `VERIFIED_SOURCE` | Record origin traceable to authoritative NASA/PDS source with independent confirmation |
-| `CACHED_VERIFIED_SOURCE` | Retrieved from API serving PDS-backed data; origin verifiable via dataset ID and DOI |
+| `CACHED_VERIFIED_SOURCE` | Retrieved from the NASA Mars Weather Service feed or its bundled cache; PDS metadata identifies a related archive product, not the feed's exact record set |
 | `UNVERIFIED_SOURCE` | Origin plausible but not independently confirmed against PDS |
 | `SYNTHETIC` | Generated or parameterized; not an actual archived observation |
 | `DERIVED` | Computed from other records (e.g. diurnal amplitude = max − min temperature) |

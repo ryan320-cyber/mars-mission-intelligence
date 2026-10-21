@@ -17,34 +17,22 @@ import { api } from "./lib/api";
 
 const OFFLINE_FALLBACK_OVERVIEW: MissionOverviewData = {
   project_title: "Mars Mission Intelligence",
-  system_status: "STANDALONE CACHE (BACKEND OFFLINE)",
-  data_freshness: "OFFLINE HISTORICAL SNAPSHOT",
-  total_observations: 4745,
-  total_sols_recorded: 4745,
-  active_datasets_count: 3,
-  anomalies_detected_count: 24,
-  latest_curiosity_sol: 4745,
-  latest_terrestrial_date: "2026-08-15",
-  latest_pressure_pa: 842.5,
-  latest_temp_max_c: -12.4,
-  latest_temp_min_c: -78.2,
-  latest_temp_amplitude_c: 65.8,
-  latest_solar_longitude_ls: 142.6,
-  latest_season: "Northern Summer / Southern Winter",
-  current_meci: {
-    index_score: 58.4,
-    classification: "HIGH",
-    classification_color: "#f59e0b",
-    formula: "MECI = 0.35 * Thermal + 0.25 * Pressure + 0.25 * Anomaly + 0.15 * Dust",
-    factor_breakdown: {
-      thermal_stress: { score: 65.8, weight: 0.35, metric: "Δ 65.8 °C", rationale: "Diurnal thermal swing" },
-      barometric_instability: { score: 48.2, weight: 0.25, metric: "1.2 Pa/sol", rationale: "Pressure variation" },
-      anomaly_intensity: { score: 55.0, weight: 0.25, metric: "55/100", rationale: "Isolation forest intensity" },
-      seasonal_dust_forcing: { score: 62.0, weight: 0.15, metric: "Ls 142.6°", rationale: "Seasonal dust forcing" }
-    },
-    disclaimer: "Static historical snapshot rendered in offline mode. Live telemetry stream unavailable."
-  },
-  data_origin: "observed"
+  system_status: "BACKEND OFFLINE",
+  data_freshness: "VERIFIED TELEMETRY UNAVAILABLE",
+  total_observations: 0,
+  total_sols_recorded: 0,
+  active_datasets_count: 0,
+  anomalies_detected_count: 0,
+  latest_curiosity_sol: null,
+  latest_terrestrial_date: null,
+  latest_pressure_pa: null,
+  latest_temp_max_c: null,
+  latest_temp_min_c: null,
+  latest_temp_amplitude_c: null,
+  latest_solar_longitude_ls: null,
+  latest_season: null,
+  current_meci: null,
+  data_origin: "unavailable"
 };
 
 const normalizeTab = (rawTab: string): string => {
@@ -89,7 +77,7 @@ export const App: React.FC = () => {
         }
       })
       .catch((err) => {
-        console.warn("Backend API unreachable. Using offline telemetry cache:", err);
+        console.warn("Backend API unavailable:", err);
         if (isMounted) {
           setOverviewData(OFFLINE_FALLBACK_OVERVIEW);
           setIsOffline(true);
@@ -106,7 +94,7 @@ export const App: React.FC = () => {
         setIsOffline(false);
       })
       .catch((err) => {
-        console.warn("Backend API retry failed. Using offline telemetry cache:", err);
+        console.warn("Backend API retry failed:", err);
         setOverviewData(OFFLINE_FALLBACK_OVERVIEW);
         setIsOffline(true);
       })

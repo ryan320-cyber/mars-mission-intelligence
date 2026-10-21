@@ -9,7 +9,7 @@ Planetary exploration faces extreme operational hazards in the Martian environme
 
 While NASA's Planetary Data System (PDS) archives millions of hours of calibrated observations across rovers and orbiters, these datasets are typically siloed, requiring specialized ephemeris tools and planetary knowledge to analyze.
 
-**Mars Mission Intelligence** bridges this gap: a multi-mission scientific analysis platform integrating authentic NASA observations (Curiosity REMS) alongside calibrated comparative demonstration baselines (InSight TWINS/APSS and MRO Mars Climate Sounder) with time-series feature engineering, dual-mode anomaly detection, explainable machine learning, the transparent Martian Environmental Challenge Index (MECI), an interactive spatial environment map, signature event replay, and an evidence-grounded AI Science Assistant.
+**Mars Mission Intelligence** bridges this gap: a multi-mission scientific analysis platform integrating cached daily summaries from NASA's Mars Weather Service Curiosity feed alongside calibrated comparative demonstration baselines (InSight TWINS/APSS and MRO Mars Climate Sounder), with time-series feature engineering, dual-mode anomaly detection, explainable machine learning, the transparent Martian Environmental Challenge Index (MECI), an interactive spatial environment map, signature event replay, and an evidence-grounded AI Science Assistant.
 
 ---
 
@@ -31,11 +31,11 @@ In strict adherence to scientific integrity and open data provenance, the applic
 
 1. **Curiosity (MSL) REMS Daily Environmental Observations**:
    - **Status**: **CACHED_VERIFIED_SOURCE** (`is_synthetic: false`, `data_origin: observed`).
-   - **Records**: 4,745 authentic daily Sol observations spanning August 2012 to August 2026.
+   - **Records**: 4,745 cached NASA feed records spanning Sol 1–4,995 (August 2012 to August 2026); gaps exist, so record count is not the latest Sol.
    - **Location**: Gale Crater / Aeolis Palus (-4.59° N, 137.44° E, -4.5 km elevation MOLA).
    - **Variables**: Ambient Air Temperature (min/max), Ground Brightness Temperature (min/max), Surface Pressure, Solar Longitude ($L_s$), UV Index, Opacity.
-   - **PDS ID**: `MSL-M-REMS-MOD-5-V1.0` | **DOI**: [10.17189/1519504](https://doi.org/10.17189/1519504)
-   - **Authenticity Verification**: Validated against NASA PDS Atmospheres Node data standards with strict calendar date checks and range bounding (-135°C to +35°C, 500 to 1250 Pa).
+   - **Ingestion source**: NASA Mars Weather Service RSS JSON API. The related PDS MODRDR product is `MSL-M-REMS-5-MODRDR-V1.0`, [DOI 10.17189/1523033](https://doi.org/10.17189/1523033); the bundled feed records are not represented as direct PDS file downloads.
+   - **Validation**: Calendar dates, Sol ordering and uniqueness, measurement ranges, missing-value handling, and temperature-amplitude consistency are checked locally.
 
 2. **InSight Lander TWINS & APSS Meteorology (Demonstration Baseline)**:
    - **Status**: **SYNTHETIC** (`is_synthetic: true`, `data_origin: simulated`, `data_provenance: DEMONSTRATION DATA`).
@@ -61,8 +61,8 @@ In strict adherence to scientific integrity and open data provenance, the applic
 
 ```mermaid
 flowchart LR
-    PDS["NASA PDS Archive Feed<br/>(Curiosity MSL REMS)"] --> Ingestion["Automated Quality & Ingestion<br/>(Multidimensional Provenance)"]
-    Ingestion --> Storage["Verified Data Cache<br/>(JSON Storage)"]
+    Feed["NASA Mars Weather Service Feed<br/>(Curiosity MSL REMS)"] --> Ingestion["Automated Quality & Ingestion<br/>(Multidimensional Provenance)"]
+    Ingestion --> Storage["NASA Feed Cache<br/>(JSON Storage)"]
     Storage --> Analytics["Time-Series & Statistics<br/>(Solar Longitude Ls, Trend Analysis)"]
     Storage --> Anomaly["Dual Anomaly Intelligence<br/>(Robust Z-Score + Isolation Forest)"]
     Storage --> MECI["Challenge Index (MECI)<br/>(0-100 Volatility Metric)"]
@@ -120,7 +120,7 @@ The Random Forest outperforms naive persistence during stable thermal seasons. H
 
 ### Prerequisites
 - Python 3.11+
-- Node.js 18+ & npm
+- Node.js 20.19+ or 22.12+ & npm (required by Vite 8)
 
 ### 1. Backend Setup & Verification
 ```bash
@@ -134,7 +134,7 @@ python -m venv .venv
 
 pip install -r requirements.txt pytest httpx
 
-# Run complete backend test suite (39 tests: analytics, anomalies, ML, API, data integrity, AI grounding)
+# Run complete backend test suite
 pytest -v
 
 # Launch backend FastAPI server on http://127.0.0.1:8000
@@ -144,7 +144,7 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ### 2. Frontend Setup & Build
 ```bash
 cd frontend
-npm install
+npm ci
 
 # TypeScript check & production build
 npm run build
@@ -156,12 +156,22 @@ npm run lint
 npm run dev
 ```
 
+## Production deployment
+
+Deploy the frontend and backend as separate Vercel projects. Set the frontend project root to `frontend`, use `npm run build`, and set its output directory to `dist`. Set `VITE_API_URL` in the frontend's production environment to the backend origin; do not append `/api`. This value is embedded at build time, so redeploy after changing it.
+
+Deploy the backend as a second Vercel project with project root `backend` and its included `vercel.json`. Set `ENVIRONMENT=production` and `ALLOWED_ORIGINS` to the exact deployed frontend origin(s), comma-separated, in the backend environment. Production startup fails when no trusted origin is configured. Arbitrary Vercel preview domains are not allowed; add a specific preview origin only when it is trusted.
+
+The frontend rewrite excludes `/api/*`, so API requests cannot silently receive the SPA's `index.html`. The backend owns `/api/*` and returns JSON 404 responses for unknown API routes. After deployment, verify the backend `/health`, `/api/overview`, and an unknown `/api/not-a-real-route` endpoint, then load the frontend and confirm its browser network requests go to the configured backend origin.
+
+Offline mode does not bundle the backend telemetry archive. When the backend is unavailable, scientific readings and calculated indices show as unavailable rather than presenting a stale manually entered snapshot.
+
 ---
 
 ## 6. NASA Space Apps Demo Mode (2–4 Minute Flow)
 Click **JUDGE DEMO MODE** in the top navigation bar to launch the guided 12-step tour:
 1. **Overview**: Inspect 4,700+ Sol Curiosity telemetry archive and comparative multi-mission baselines.
-2. **Explorer**: Switch between Curiosity (authentic PDS archive) and InSight (calibrated baseline simulation).
+2. **Explorer**: Switch between Curiosity (cached NASA weather feed) and InSight (calibrated baseline simulation).
 3. **Time-Series**: Examine pressure oscillations and sensor gap highlights.
 4. **Vertical Profiles**: Inspect MRO MCS reference altitude profiles with $1\sigma$ uncertainty bands.
 5. **Anomalies**: Open the Anomaly Timeline and inspect statistical candidate events.

@@ -61,13 +61,15 @@ export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNaviga
         {/* KPI 2: Recorded Sols */}
         <div className="group relative bg-slate-900/60 backdrop-blur-md border border-slate-800/80 border-t-2 border-t-transparent hover:border-t-amber-400 hover:border-slate-700/80 rounded-xl p-3.5 transition-all duration-300 ease-in-out hover:translate-y-[-2px] shadow-lg hover:shadow-amber-500/10">
           <div className="text-[11px] text-slate-400 font-mono font-semibold tracking-wider uppercase flex items-center justify-between">
-            <span>RECORDED SOLS</span>
+            <span>LATEST SOL</span>
             <Sun className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black font-mono text-amber-400 mt-1.5 tracking-tight drop-shadow-sm">
-            Sol {data.total_sols_recorded}
+            {data.latest_curiosity_sol != null ? `Sol ${data.latest_curiosity_sol}` : "N/A"}
           </div>
-          <div className="text-[10px] text-slate-400 font-mono mt-1 font-medium tracking-wide uppercase">2012 — 2026 UTC</div>
+          <div className="text-[10px] text-slate-400 font-mono mt-1 font-medium tracking-wide uppercase">
+            {data.total_sols_recorded.toLocaleString()} observation records
+          </div>
         </div>
 
         {/* KPI 3: Surface Pressure */}
@@ -77,7 +79,7 @@ export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNaviga
             <Gauge className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black font-mono text-cyan-300 mt-1.5 tracking-tight drop-shadow-sm">
-            {data.latest_pressure_pa ? `${data.latest_pressure_pa} Pa` : "N/A"}
+            {data.latest_pressure_pa != null ? `${data.latest_pressure_pa} Pa` : "N/A"}
           </div>
           <div className="text-[10px] text-slate-400 font-mono mt-1 font-medium tracking-wide uppercase">Gale Crater Datum</div>
         </div>
@@ -89,10 +91,12 @@ export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNaviga
             <Thermometer className="w-3.5 h-3.5 text-rose-400 group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black font-mono text-rose-300 mt-1.5 tracking-tight drop-shadow-sm">
-            {data.latest_temp_amplitude_c ? `Δ ${data.latest_temp_amplitude_c} °C` : "N/A"}
+            {data.latest_temp_amplitude_c != null ? `Δ ${data.latest_temp_amplitude_c} °C` : "N/A"}
           </div>
           <div className="text-[10px] text-slate-400 font-mono mt-1 font-medium tracking-wide uppercase">
-            {data.latest_temp_min_c}°C to {data.latest_temp_max_c}°C
+            {data.latest_temp_min_c != null && data.latest_temp_max_c != null
+              ? `${data.latest_temp_min_c}°C to ${data.latest_temp_max_c}°C`
+              : "Temperature range unavailable"}
           </div>
         </div>
 
@@ -118,11 +122,11 @@ export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNaviga
             <ShieldAlert className="w-3.5 h-3.5 text-mars-rust group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-2xl font-black font-mono text-mars-amber mt-1.5 tracking-tight flex items-baseline gap-1 drop-shadow-sm">
-            <span>{meci?.index_score}</span>
+            <span>{meci?.index_score ?? "N/A"}</span>
             <span className="text-xs font-semibold text-slate-400">/100</span>
           </div>
           <div className="text-[10px] font-mono text-amber-300 mt-1 font-bold tracking-wide uppercase">
-            {meci?.classification}
+            {meci?.classification ?? "UNAVAILABLE"}
           </div>
         </div>
       </div>
@@ -137,7 +141,7 @@ export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNaviga
               AUTHENTIC MARTIAN ENVIRONMENTAL STATE
             </h2>
             <span className="text-xs font-mono text-slate-300 tracking-wider">
-              Solar Longitude: <span className="text-cyan-300 font-bold">{data.latest_solar_longitude_ls}°</span>
+              Solar Longitude: <span className="text-cyan-300 font-bold">{data.latest_solar_longitude_ls != null ? `${data.latest_solar_longitude_ls}°` : "N/A"}</span>
             </span>
           </div>
 
@@ -147,7 +151,7 @@ export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNaviga
                 <Sun className="w-3.5 h-3.5 text-amber-400" />
                 <span>Martian Season & Orbit</span>
               </div>
-              <div className="text-sm font-bold text-white tracking-wide">{data.latest_season}</div>
+              <div className="text-sm font-bold text-white tracking-wide">{data.latest_season ?? "Season unavailable"}</div>
               <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
                 Governed by orbital eccentricity (e = 0.0934), driving a 45% insolation delta between aphelion and perihelion.
               </p>
@@ -159,7 +163,7 @@ export const MissionOverview: React.FC<MissionOverviewProps> = ({ data, onNaviga
                 <span>Boundary Layer Thermal Stress</span>
               </div>
               <div className="text-sm font-bold text-rose-300 tracking-wide">
-                Daily Range: Δ {data.latest_temp_amplitude_c} °C
+                Daily Range: {data.latest_temp_amplitude_c != null ? `Δ ${data.latest_temp_amplitude_c} °C` : "Unavailable"}
               </div>
               <p className="text-[11px] text-slate-400 font-sans leading-relaxed">
                 Low atmospheric density (~1% Earth) yields rapid radiative cooling and sharp diurnal thermal boundary waves.

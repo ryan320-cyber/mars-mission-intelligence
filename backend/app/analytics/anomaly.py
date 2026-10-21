@@ -177,17 +177,17 @@ def generate_event_replay(
             })
 
     # Scientific Event Reconstruction Narrative
-    amp = event_data.get("temp_amplitude_c", 50.0)
-    if amp is not None and amp < 35.0:
-        event_type = "Regional / Global Dust Heating Event"
-        pre_narration = "Baseline Martian atmosphere shows sharp diurnal radiative swings (~55°C) with cold nights."
-        event_narration = f"At Sol {target_sol}, suspended atmospheric dust trapped thermal IR radiation, collapsing diurnal amplitude to {amp}°C while warming nighttime lows."
-        post_narration = "As dust sedimentation progressed, atmospheric opacity declined and diurnal swings gradually restored over the subsequent 10 sols."
-    else:
-        event_type = "Barometric Atmospheric Wave Event"
-        pre_narration = "Atmosphere was operating under standard seasonal barometric oscillation."
-        event_narration = f"At Sol {target_sol}, a significant atmospheric pressure shift of {event_data.get('pressure_pa')} Pa was recorded across Gale Crater."
-        post_narration = "Local wind and barometric equilibrium normalized in subsequent sols."
+    amp = event_data.get("temp_amplitude_c")
+    pressure = event_data.get("pressure_pa")
+    event_type = "Observed telemetry snapshot"
+    pre_narration = "Context is limited to the available measurements in the cached NASA Mars Weather Service feed."
+    event_narration = (
+        f"Sol {target_sol}: observed temperature amplitude {amp} °C and pressure {pressure} Pa. "
+        "This replay describes measurements only; it does not establish a physical cause or event."
+        if amp is not None or pressure is not None
+        else f"Sol {target_sol}: required environmental measurements are unavailable; no event interpretation was generated."
+    )
+    post_narration = "No forecast or post-event evolution is inferred from this single-sol replay."
 
     return {
         "target_sol": target_sol,

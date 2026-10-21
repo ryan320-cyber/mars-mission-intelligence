@@ -11,9 +11,9 @@ import {
 } from "./types";
 
 const getBaseUrl = (): string => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL?.trim();
   if (envUrl && typeof envUrl === "string") {
-    return envUrl.replace(/\/+$/, '').replace(/\/api$/, '');
+    return envUrl.replace(/\/+$/, '').replace(/\/api$/i, '');
   }
   // In production builds, never default to 127.0.0.1 (user's local device).
   // Use relative root so requests route through the hosting origin or reverse proxy.
@@ -28,16 +28,30 @@ const baseUrl = getBaseUrl();
 export const API_BASE = baseUrl ? `${baseUrl}/api` : '/api';
 
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  if (import.meta.env.PROD && !import.meta.env.VITE_API_URL?.trim()) {
+    throw new Error("The production API is not configured. Set VITE_API_URL to the backend origin and rebuild the frontend.");
+  }
   const url = `${API_BASE}${endpoint}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
+  const signal = options?.signal ? AbortSignal.any([options.signal, controller.signal]) : controller.signal;
   try {
-    const res = await fetch(url, options);
+    const res = await fetch(url, { ...options, signal });
     if (!res.ok) {
       throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
+    }
+    if (!res.headers.get("content-type")?.toLowerCase().includes("application/json")) {
+      throw new Error("The API returned a non-JSON response. Check the backend URL and API routing configuration.");
     }
     return await res.json();
   } catch (err) {
     console.warn(`API request failed for ${endpoint}:`, err);
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("The Mars API request timed out after 15 seconds.");
+    }
     throw err;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 

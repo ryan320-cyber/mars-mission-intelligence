@@ -27,7 +27,7 @@ class ProvenanceStatus(str, Enum):
     """
     Formal Provenance Status Enums conforming to Directive / Phase 3:
     - VERIFIED_SOURCE: Directly ingested from authoritative live NASA endpoint with valid signature
-    - CACHED_VERIFIED_SOURCE: Loaded from validated local cache originated from authoritative PDS archive
+    - CACHED_VERIFIED_SOURCE: Loaded from the NASA Mars Weather Service feed or its bundled cache
     - UNVERIFIED_SOURCE: External record without authenticated PDS origin metadata
     - SYNTHETIC: Simulated or parameterized demonstration dataset
     - DERIVED: Computed analytical or ML result
@@ -168,8 +168,8 @@ class DataIngestionEngine:
                 })
                 continue
             
-            # 2. Source Authenticity Verification (Independent from date validation and self-declared strings)
-            has_pds_origin = bool(is_source_verified)
+            # Source verification comes from the trusted NASA feed/cache channel, not record text.
+            has_trusted_nasa_source = bool(is_source_verified)
             
             # 3. Physical Plausibility Checks
             press = r.get("pressure_pa")
@@ -184,12 +184,13 @@ class DataIngestionEngine:
             r["physical_plausibility"] = "PLAUSIBLE" if is_physically_plausible else "OUT_OF_BOUNDS"
             r["completeness"] = "COMPLETE" if (press is not None and t_max is not None) else "PARTIAL"
             
-            if has_pds_origin:
-                r["source_authenticity"] = "VERIFIED_NASA_ARCHIVE"
+            if has_trusted_nasa_source:
+                r["source_authenticity"] = "VERIFIED_NASA_MARS_WEATHER_API"
                 r["data_origin"] = "observed"
                 r["is_synthetic"] = False
                 r["provenance_status"] = "CACHED_VERIFIED_SOURCE"
-                r["dataset_id"] = "MSL-M-REMS-MOD-5-V1.0"
+                r["dataset_id"] = "NASA-MSL-WEATHER-RSS"
+                r["data_source"] = "NASA Mars Weather Service RSS JSON API (Curiosity / MSL)"
                 r["suitability"] = "SUITABLE_FOR_RESEARCH"
             else:
                 r["source_authenticity"] = "UNVERIFIED"
@@ -285,8 +286,8 @@ class DataIngestionEngine:
                     "site": "Gale Crater",
                     "latitude_deg": -4.5895,
                     "longitude_deg": 137.4417,
-                    "data_source": "NASA Mars Weather Service / MSL REMS PDS",
-                    "dataset_id": "MSL-M-REMS-MOD-5-V1.0",
+                    "data_source": "NASA Mars Weather Service RSS JSON API (Curiosity / MSL)",
+                    "dataset_id": "NASA-MSL-WEATHER-RSS",
                     "data_origin": "observed",
                     "is_synthetic": False,
                     "provenance_status": "CACHED_VERIFIED_SOURCE"

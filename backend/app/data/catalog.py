@@ -12,12 +12,12 @@ DATASET_CATALOG: Dict[str, Dict[str, Any]] = {
         "mission": "Mars Science Laboratory (MSL)",
         "spacecraft": "Curiosity Rover",
         "instrument": "Rover Environmental Monitoring Station (REMS)",
-        "dataset_id": "MSL-M-REMS-MOD-5-V1.0",
-        "pds_urn": "urn:nasa:pds:msl_rems:data_derived",
-        "doi": "10.17189/1519504",
+        "dataset_id": "MSL-M-REMS-5-MODRDR-V1.0",
+        "pds_urn": "",
+        "doi": "10.17189/1523033",
         "source_url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
-        "pds_archive_url": "https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/MARS/curiosity.html",
-        "processing_level": "Level 4 (Calibrated & Daily Derived Statistics)",
+        "pds_archive_url": "https://atmos.nmsu.edu/data_and_services/atmospheres_data/MARS/curiosity/rems.html",
+        "processing_level": "NASA Mars Weather Service daily feed summaries; related PDS MODRDR archive is separate",
         "spatial_coverage": {
             "site": "Gale Crater (Aeolis Palus)",
             "latitude_deg": -4.5895,
@@ -79,7 +79,7 @@ DATASET_CATALOG: Dict[str, Dict[str, Any]] = {
                 "unit": "degrees (°)",
                 "sensor": "Ephemeris derivation (NAIF SPICE)",
                 "physical_range": [0.0, 360.0],
-                "uncertainty": "Exact celestial coordinate"
+                "uncertainty": "NASA feed reports whole-degree Solar Longitude; not recomputed by this application"
             },
             {
                 "id": "uv_index",

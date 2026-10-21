@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+from app.core.config import get_cors_settings
 
 client = TestClient(app)
 
@@ -75,18 +76,6 @@ def test_post_ai_query():
     assert "source" in data
 
 def test_cors_headers():
-    origin = "https://mars-mission-intelligence-pzjo.vercel.app"
-    res = client.options(
-        "/api/overview",
-        headers={
-            "Origin": origin,
-            "Access-Control-Request-Method": "GET",
-        },
-    )
-    assert res.status_code == 200
-    assert res.headers.get("access-control-allow-origin") == origin
-
-    # Test local dev origin
     local_origin = "http://localhost:5173"
     res_local = client.options(
         "/api/overview",
@@ -97,6 +86,38 @@ def test_cors_headers():
     )
     assert res_local.status_code == 200
     assert res_local.headers.get("access-control-allow-origin") == local_origin
+
+    for origin in ("https://untrusted.example", "https://random-preview.vercel.app"):
+        rejected = client.options(
+            "/api/overview",
+            headers={"Origin": origin, "Access-Control-Request-Method": "GET"},
+        )
+        assert "access-control-allow-origin" not in rejected.headers
+
+def test_production_cors_requires_and_uses_explicit_origins():
+    import pytest
+    from fastapi import FastAPI
+    from fastapi.middleware.cors import CORSMiddleware
+
+    with pytest.raises(ValueError, match="ALLOWED_ORIGINS"):
+        get_cors_settings(environment="production", allowed_origins="")
+    with pytest.raises(ValueError, match="Invalid CORS origin"):
+        get_cors_settings(environment="production", allowed_origins="https://mars.example/path")
+
+    configured_app = FastAPI()
+    configured_app.add_middleware(
+        CORSMiddleware,
+        **get_cors_settings(environment="production", allowed_origins=" https://mars.example "),
+    )
+    configured_client = TestClient(configured_app)
+    accepted = configured_client.options(
+        "/", headers={"Origin": "https://mars.example", "Access-Control-Request-Method": "GET"},
+    )
+    rejected = configured_client.options(
+        "/", headers={"Origin": "https://random-preview.vercel.app", "Access-Control-Request-Method": "GET"},
+    )
+    assert accepted.headers.get("access-control-allow-origin") == "https://mars.example"
+    assert "access-control-allow-origin" not in rejected.headers
 
 def test_profile_downsampling():
     # Full profiles
@@ -148,6 +169,10 @@ def test_unsupported_variable_returns_400():
     res_anomaly_cat = client.get("/api/anomalies?variable=martian_season")
     assert res_anomaly_cat.status_code == 400
     assert "Unsupported numerical variable" in res_anomaly_cat.json()["detail"]
+
+def test_challenge_simulation_rejects_unbounded_inputs():
+    assert client.post("/api/challenge-index/simulate", json={"temp_variability_multiplier": -1}).status_code == 422
+    assert client.post("/api/challenge-index/simulate", json={"hypothetical_pressure_drop_pa": 501}).status_code == 422
 
 def test_invalid_anomaly_threshold_returns_400():
     """Phase 5.4 Regression: Non-positive or out-of-range anomaly thresholds return HTTP 400."""
@@ -212,4 +237,50 @@ def test_export_validation_rejects_unsupported_mission_and_format():
     res_csv = client.get("/api/export?mission=curiosity&format=csv")
     assert res_csv.status_code == 200
     assert "text/csv" in res_csv.headers.get("content-type", "")
+
+    import csv
+    import io
+    for fmt in ("CSV", "Csv", "%20csv%20"):
+        normalized = client.get(f"/api/export?mission=curiosity&format={fmt}")
+        assert normalized.status_code == 200
+        assert "text/csv" in normalized.headers.get("content-type", "")
+        rows = list(csv.DictReader(io.StringIO(normalized.text)))
+        assert rows and "sol" in rows[0]
+
+def test_csv_export_escapes_special_values_and_supports_empty_data(monkeypatch):
+    import csv
+    import io
+    from app.core.data_loader import data_loader
+
+    special_record = {"sol": 8, "note": 'comma, quote " and newline\nplus Unicode: मंगल', "missing": None}
+    monkeypatch.setattr(data_loader, "get_curiosity_records", lambda: [special_record])
+    response = client.get("/api/export?mission=curiosity&format=%20CSV%20")
+    assert response.status_code == 200
+    assert "text/csv" in response.headers["content-type"]
+    assert response.headers["content-disposition"] == "attachment; filename=curiosity_mars_telemetry.csv"
+    rows = list(csv.DictReader(io.StringIO(response.text)))
+    assert rows[0]["note"] == special_record["note"]
+    assert rows[0]["missing"] == ""
+
+    monkeypatch.setattr(data_loader, "get_curiosity_records", lambda: [])
+    empty = client.get("/api/export?mission=curiosity&format=csv")
+    assert empty.status_code == 200
+    assert "text/csv" in empty.headers["content-type"]
+    assert empty.text == ""
+
+def test_overview_distinguishes_record_count_from_latest_sol():
+    from app.core.data_loader import data_loader
+
+    records = data_loader.get_curiosity_records()
+    latest = max(records, key=lambda record: record["sol"])
+    overview = client.get("/api/overview").json()
+    assert overview["total_sols_recorded"] == len(records)
+    assert overview["latest_curiosity_sol"] == latest["sol"]
+    assert overview["latest_terrestrial_date"] == latest["terrestrial_date"]
+    assert overview["latest_pressure_pa"] == latest["pressure_pa"]
+
+def test_unknown_api_route_returns_json_404():
+    response = client.get("/api/not-a-real-route")
+    assert response.status_code == 404
+    assert "application/json" in response.headers["content-type"]
 

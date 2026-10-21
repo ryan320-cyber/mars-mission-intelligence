@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlsplit
 from pathlib import Path
 
 # Paths
@@ -10,6 +11,31 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 PROJECT_NAME = "Mars Mission Intelligence"
 VERSION = "1.0.0"
 API_V1_STR = "/api"
+
+
+def get_cors_settings(environment=None, allowed_origins=None):
+    """Return a restrictive CORS policy for the configured frontend origins."""
+    environment = (environment if environment is not None else os.getenv("ENVIRONMENT", "development")).strip().lower()
+    configured = allowed_origins if allowed_origins is not None else os.getenv("ALLOWED_ORIGINS", "")
+    origins = [origin.strip().rstrip("/") for origin in configured.split(",") if origin.strip()]
+
+    if not origins and environment != "production":
+        origins = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000"]
+    if environment == "production" and not origins:
+        raise ValueError("ALLOWED_ORIGINS must include at least one trusted frontend origin in production.")
+
+    for origin in origins:
+        parsed = urlsplit(origin)
+        if (parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.path or parsed.query
+                or parsed.fragment or parsed.username or parsed.password or origin == "*"):
+            raise ValueError(f"Invalid CORS origin: {origin!r}")
+
+    return {
+        "allow_origins": origins,
+        "allow_credentials": False,
+        "allow_methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"],
+    }
 
 # Server
 HOST = os.getenv("HOST", "127.0.0.1")

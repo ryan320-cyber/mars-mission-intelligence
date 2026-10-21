@@ -125,7 +125,7 @@ export const ChallengeIndexCard: React.FC = () => {
             <span className="text-xs font-mono text-slate-400">CURRENT COMPOSITE CHALLENGE SCORE</span>
             <div className="flex items-baseline gap-2 mt-2">
               <span className="text-6xl font-black font-mono text-mars-amber">
-                {indexData.index_score}
+                {indexData.index_score ?? "N/A"}
               </span>
               <span className="text-sm font-mono text-slate-500">/ 100</span>
             </div>
@@ -137,10 +137,12 @@ export const ChallengeIndexCard: React.FC = () => {
                     ? "bg-rose-500/20 text-rose-400 border border-rose-500/40"
                     : indexData.classification === "HIGH"
                     ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                    : indexData.classification === "UNAVAILABLE"
+                    ? "bg-slate-500/20 text-slate-400 border border-slate-500/40"
                     : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
                 }`}
               >
-                {indexData.classification} CHALLENGE REGIME
+                {indexData.classification === "UNAVAILABLE" ? "SCORE UNAVAILABLE" : `${indexData.classification} CHALLENGE REGIME`}
               </span>
             </div>
           </div>
@@ -170,12 +172,12 @@ export const ChallengeIndexCard: React.FC = () => {
             <div className="space-y-1.5">
               <div className="flex justify-between text-slate-300">
                 <span className="font-semibold">1. Diurnal Thermal Stress (35% Weight)</span>
-                <span className="text-mars-amber font-bold">{factors.thermal_stress.score} / 100</span>
+                <span className="text-mars-amber font-bold">{factors.thermal_stress.score ?? "N/A"} / 100</span>
               </div>
               <div className="w-full h-2.5 bg-mars-surface rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-amber-500 to-rose-500 rounded-full transition-all"
-                  style={{ width: `${factors.thermal_stress.score}%` }}
+                  style={{ width: `${factors.thermal_stress.score ?? 0}%` }}
                 />
               </div>
               <div className="flex justify-between text-[10px] text-slate-500">
@@ -188,12 +190,12 @@ export const ChallengeIndexCard: React.FC = () => {
             <div className="space-y-1.5">
               <div className="flex justify-between text-slate-300">
                 <span className="font-semibold">2. Barometric Instability (25% Weight)</span>
-                <span className="text-sky-400 font-bold">{factors.barometric_instability.score} / 100</span>
+                <span className="text-sky-400 font-bold">{factors.barometric_instability.score ?? "N/A"} / 100</span>
               </div>
               <div className="w-full h-2.5 bg-mars-surface rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-sky-500 to-blue-500 rounded-full transition-all"
-                  style={{ width: `${factors.barometric_instability.score}%` }}
+                  style={{ width: `${factors.barometric_instability.score ?? 0}%` }}
                 />
               </div>
               <div className="flex justify-between text-[10px] text-slate-500">
@@ -206,12 +208,12 @@ export const ChallengeIndexCard: React.FC = () => {
             <div className="space-y-1.5">
               <div className="flex justify-between text-slate-300">
                 <span className="font-semibold">3. Anomaly Intensity (25% Weight)</span>
-                <span className="text-mars-warning font-bold">{factors.anomaly_intensity.score} / 100</span>
+                <span className="text-mars-warning font-bold">{factors.anomaly_intensity.score ?? "N/A"} / 100</span>
               </div>
               <div className="w-full h-2.5 bg-mars-surface rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-yellow-500 to-amber-500 rounded-full transition-all"
-                  style={{ width: `${factors.anomaly_intensity.score}%` }}
+                  style={{ width: `${factors.anomaly_intensity.score ?? 0}%` }}
                 />
               </div>
               <div className="flex justify-between text-[10px] text-slate-500">
@@ -224,12 +226,12 @@ export const ChallengeIndexCard: React.FC = () => {
             <div className="space-y-1.5">
               <div className="flex justify-between text-slate-300">
                 <span className="font-semibold">4. Seasonal Perihelion Dust Forcing (15% Weight)</span>
-                <span className="text-purple-400 font-bold">{factors.seasonal_dust_forcing.score} / 100</span>
+                <span className="text-purple-400 font-bold">{factors.seasonal_dust_forcing.score ?? "N/A"} / 100</span>
               </div>
               <div className="w-full h-2.5 bg-mars-surface rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all"
-                  style={{ width: `${factors.seasonal_dust_forcing.score}%` }}
+                  style={{ width: `${factors.seasonal_dust_forcing.score ?? 0}%` }}
                 />
               </div>
               <div className="flex justify-between text-[10px] text-slate-500">

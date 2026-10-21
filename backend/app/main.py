@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
-from app.core.config import PROJECT_NAME, VERSION, API_V1_STR
+from app.core.config import PROJECT_NAME, VERSION, API_V1_STR, get_cors_settings
 from app.core.data_loader import data_loader
 from app.api.router import api_router
 
@@ -51,22 +51,8 @@ app = FastAPI(
 # GZip Compression Middleware (Directive: compress payloads > 1000 bytes)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# CORS Configuration: allow localhost dev ports, 127.0.0.1, and Vercel production origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
-    allow_origin_regex=r"https://.*\.vercel\.app",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS only allows explicitly configured frontend origins in production.
+app.add_middleware(CORSMiddleware, **get_cors_settings())
 
 # Request Timing & Telemetry Middleware
 @app.middleware("http")
@@ -106,7 +92,7 @@ def health_check():
         "data_readiness": "LOADED" if ready else "NOT_LOADED",
         "cache": cache_meta,
         "provenance_summary": {
-            "curiosity_rems": "OBSERVED_VERIFIED_PDS" if cache_meta.get("curiosity_count", 0) > 0 else "UNAVAILABLE",
+            "curiosity_rems": "OBSERVED_NASA_MARS_WEATHER_SERVICE_FEED" if cache_meta.get("curiosity_count", 0) > 0 else "UNAVAILABLE",
             "insight_twins": "CALIBRATED_SIMULATION_BASELINE" if cache_meta.get("insight_count", 0) > 0 else "UNAVAILABLE",
             "mro_mcs": "PARAMETERIZED_REFERENCE_MODEL" if cache_meta.get("mcs_count", 0) > 0 else "UNAVAILABLE"
         }

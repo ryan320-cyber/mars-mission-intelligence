@@ -64,8 +64,8 @@ def test_curiosity_observed_data_labeling():
     assert sample.get("data_origin") == "observed"
     assert sample.get("is_synthetic") is False
     assert sample.get("provenance_status") in ["CACHED_VERIFIED_SOURCE", "VERIFIED_AUTHORITATIVE"]
-    assert sample.get("dataset_id") == "MSL-M-REMS-MOD-5-V1.0"
-    assert sample.get("source_authenticity") == "VERIFIED_NASA_ARCHIVE"
+    assert sample.get("dataset_id") == "NASA-MSL-WEATHER-RSS"
+    assert sample.get("source_authenticity") == "VERIFIED_NASA_MARS_WEATHER_API"
     assert sample.get("structural_validity") == "VALID"
 
 def test_mcs_profiles_uncertainty_and_provenance():
@@ -164,7 +164,7 @@ def test_self_declared_mission_name_cannot_confer_source_verification():
             "sol": 3000,
             "terrestrial_date": "2021-01-01",
             "data_source": "NASA REMS MSL CURIOSITY OFFICIAL TELEMETRY",
-            "dataset_id": "MSL-M-REMS-MOD-5-V1.0",
+            "dataset_id": "NASA-MSL-WEATHER-RSS",
             "mission": "MSL Curiosity"
         }
     ]

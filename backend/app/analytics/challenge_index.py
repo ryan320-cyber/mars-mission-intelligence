@@ -36,14 +36,33 @@ def calculate_meci(
             "seasonal_forcing": 0.15
         }
 
+    # Do not turn absent observations into plausible-looking measured values.
+    if temp_amplitude_c is None or pressure_pa is None or solar_longitude_ls is None:
+        return {
+            "index_score": None,
+            "classification": "UNAVAILABLE",
+            "classification_color": "#64748b",
+            "formula": "MECI unavailable: required telemetry is missing.",
+            "factor_breakdown": {
+                key: {"score": None, "weight": weight, "metric": "Unavailable: required telemetry is missing.", "rationale": "No score calculated without required observed telemetry."}
+                for key, weight in {
+                    "thermal_stress": weights["thermal_stress"],
+                    "barometric_instability": weights["barometric_instability"],
+                    "anomaly_intensity": weights["anomaly_intensity"],
+                    "seasonal_dust_forcing": weights["seasonal_forcing"],
+                }.items()
+            },
+            "disclaimer": "No MECI score is reported because required observed telemetry is unavailable.",
+        }
+
     # 1. Thermal Stress: Mars diurnal swings range between 20°C (during heavy dust storms) and 80°C (clear skies)
     # High diurnal swing strains mechanical joints, batteries, and solar arrays
-    amp = temp_amplitude_c if temp_amplitude_c is not None else 52.0
+    amp = temp_amplitude_c
     f_thermal = float(np.clip((amp / 75.0) * 100.0, 0.0, 100.0))
 
     # 2. Barometric Instability: Rapid pressure swings indicate atmospheric gravity waves or tidal surges
     # Surface pressure typically changes < 5 Pa/day; changes > 15 Pa/day indicate sharp barometric turbulence
-    dp = abs(pressure_rate_of_change) if pressure_rate_of_change is not None else 2.5
+    dp = abs(pressure_rate_of_change) if pressure_rate_of_change is not None else 0.0
     f_pressure = float(np.clip((dp / 18.0) * 100.0, 0.0, 100.0))
 
     # 3. Anomaly Intensity: Derived directly from Isolation Forest / Robust Z-score (0 - 100)
@@ -184,14 +203,7 @@ def compute_current_meci_from_telemetry(
             if so, extracts its intensity; otherwise 0.0.
     """
     if not curiosity_records:
-        return calculate_meci(
-            temp_amplitude_c=None,
-            pressure_pa=None,
-            pressure_rate_of_change=None,
-            solar_longitude_ls=None,
-            anomaly_intensity=0.0,
-            weights=weights
-        )
+        return calculate_meci(None, None, None, None, 0.0, weights=weights)
 
     valid_sols = [r for r in curiosity_records if r.get("sol") is not None]
     if not valid_sols:
@@ -199,6 +211,8 @@ def compute_current_meci_from_telemetry(
 
     latest = valid_sols[-1]
     latest_sol = latest.get("sol")
+    if latest.get("temp_amplitude_c") is None or latest.get("pressure_pa") is None or latest.get("solar_longitude_ls") is None:
+        return calculate_meci(None, None, None, None, 0.0, weights=weights)
 
     # Compute empirical pressure rate of change from the immediate prior Sol with pressure
     p_latest = latest.get("pressure_pa")

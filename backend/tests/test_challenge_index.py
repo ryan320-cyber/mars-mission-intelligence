@@ -1,5 +1,14 @@
 import pytest
-from app.analytics.challenge_index import calculate_meci, simulate_scenario
+from app.analytics.challenge_index import calculate_meci, compute_current_meci_from_telemetry, simulate_scenario
+
+def test_meci_is_unavailable_without_required_observations():
+    result = compute_current_meci_from_telemetry([])
+    assert result["index_score"] is None
+    assert result["classification"] == "UNAVAILABLE"
+    assert result["factor_breakdown"]["thermal_stress"]["score"] is None
+
+    partial = compute_current_meci_from_telemetry([{"sol": 1, "temp_amplitude_c": 40.0}])
+    assert partial["index_score"] is None
 
 def test_meci_bounds_and_structure():
     meci = calculate_meci(

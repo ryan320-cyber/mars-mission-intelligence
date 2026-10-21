@@ -1,5 +1,9 @@
 # React + TypeScript + Vite
 
+## Mars Mission Intelligence
+
+Use Node.js 20.19+ or 22.12+ with npm. Run `npm ci`, then `npm run dev` for local development. Set `VITE_API_URL` to the backend origin for production builds; the frontend appends `/api` automatically. See the repository README for deployment and smoke-test instructions.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
